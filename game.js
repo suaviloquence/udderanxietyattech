@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ctx = canvas.getContext("2d");
   const inp = new InputManager(canvas);
 
-  run(new MeowMinigame(), ctx, inp);
+  run(new DressUpMinigame(), ctx);
 });
 
 class InputManager {
@@ -256,5 +256,41 @@ class MeowMinigame extends Minigame {
         }, 20);
       }
     }
+  }
+}
+
+class DressUpMinigame extends Minigame {
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  setup(ctx) {
+    // how we want it to start
+    // make it such that the screen of outfits is up, 3 outfits: 1 really bad one, 1 good one, 1 eh one
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // for the confirm button
+    ctx.fillStyle = "grey";
+    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12)
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   */
+  loop(ctx, i) {
+    // patty in the middle with arrows that are clickable to change that outfit
+
+
+
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  time () {
+    // how long we want minigame to last!
+    return 20;
   }
 }
