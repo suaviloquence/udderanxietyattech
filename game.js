@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
 
-  run(new DressUpMinigame(), ctx);
-  await run(new PhoneInBedMinigame(), ctx, inp);
-  await run(new MeowMinigame(), ctx, inp);
+  run(new DressUpMinigame(), ctx, inp);
+  // await run(new PhoneInBedMinigame(), ctx, inp);
+  // await run(new MeowMinigame(), ctx, inp);
 });
 
 class InputManager {
@@ -334,6 +334,8 @@ class DressUpMinigame extends Minigame {
     this.right_arrow_hat.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
     this.right_arrow_hat.width = 100;
     this.right_arrow_hat.height = 100;
+    this.right_arrow_hatx = CENTER_X + 250- this.right_arrow_hat.width / 2;
+    this.right_arrow_haty = CENTER_Y - 200 - this.right_arrow_hat.height / 2;
 
     this.right_arrow_top = new Image();
     this.right_arrow_top.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
@@ -380,8 +382,9 @@ class DressUpMinigame extends Minigame {
   /**
    * @param {CanvasRenderingContext2D} ctx
    * @param {Number} i
+   * @param {InputManager} inp 
    */
-  loop(ctx, i) {
+  loop(ctx, i, mgr, inp) {
     // patty in the middle with arrows that are clickable to change that outfit
     // button will be the ending to the loop if not the timer
     // timer in the top left
@@ -393,7 +396,7 @@ class DressUpMinigame extends Minigame {
 
     // the constant images
     ctx.drawImage(this.patty, CENTER_X - WIDTH / 4, CENTER_Y - HEIGHT / 3, WIDTH / 2, HEIGHT / 1.5);
-    ctx.drawImage(this.right_arrow_hat, CENTER_X + 250- this.right_arrow_hat.width / 2, CENTER_Y - 200 - this.right_arrow_hat.height / 2, this.right_arrow_hat.width, this.right_arrow_hat.height);
+    ctx.drawImage(this.right_arrow_hat, this.right_arrow_hatx, this.right_arrow_haty, 100, 100);
     ctx.drawImage(this.right_arrow_top, CENTER_X + 250- this.right_arrow_top.width / 2, CENTER_Y - 50 - this.right_arrow_top.height / 2, this.right_arrow_top.width, this.right_arrow_top.height);
     ctx.drawImage(this.right_arrow_bottom, CENTER_X + 250- this.right_arrow_bottom.width / 2, CENTER_Y + 100  - this.right_arrow_bottom.height / 2, this.right_arrow_bottom.width, this.right_arrow_bottom.height);
     ctx.drawImage(this.left_arrow_hat, CENTER_X - 250- this.left_arrow_hat.width / 2, CENTER_Y - 200 - this.left_arrow_hat.height / 2, this.left_arrow_hat.width, this.left_arrow_hat.height);
@@ -421,9 +424,16 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(this.hat, CENTER_X - 50, CENTER_Y - 250, 100, 100);
 
     // CONTROL LOGIC FOR the arrow stuff
-    
-    
+    // if (inp.isMouseDown(MOUSE_LEFT) &&
+    // (this.right_arrow_hatx <= inp.mouseX /** && inp.mouseX <= this.right_arrow_hatx + this.right_arrow_hat.width*/ ) &&
+    // (this.right_arrow_haty <= inp.mouseY && inp.mouseY <= this.right_arrow_haty + this.right_arrow_hat.height)) {
+    //  console.log("clickable fr");
+    //}
+    console.log("inp is", inp);
 
+    if (inp.isMousePressed(MOUSE_LEFT)) {
+      console.log("mouse pressed");
+    }
   }
 
   /**
@@ -436,7 +446,7 @@ class DressUpMinigame extends Minigame {
   
 }
 
-  class PhoneInBedMinigame {
+class PhoneInBedMinigame {
     constructor() {
       this.x = WIDTH / 2;
       this.y = (HEIGHT * 3) / 4;
@@ -529,3 +539,5 @@ class DressUpMinigame extends Minigame {
   }
   
 }
+
+
