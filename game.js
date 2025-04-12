@@ -276,9 +276,17 @@ class MeowMinigame extends Minigame {
 }
 
 class DressUpMinigame extends Minigame {
+
+  static Outfit = {
+    CUTE: 1,
+    GOOD: 2,
+    DEPRESSED: 0
+  };
+
   /**
    * @param {CanvasRenderingContext2D} ctx
    */
+
   setup(ctx) {
     // how we want it to start
     // make it such that the screen of outfits is up, 3 outfits: 1 really bad one, 1 good one, 1 eh one
@@ -293,9 +301,7 @@ class DressUpMinigame extends Minigame {
     // patty TODO: CHANGE TO ACTUAL PHOTO
     this.patty = new Image();
     this.patty.src = "https://img.freepik.com/free-vector/cute-cartoon-cow-illustration_1308-176774.jpg";
-    this.patty.onload = () => {
-      ctx.drawImage(this.patty, 100, 100, 200, 150);
-    };
+    
 
     // arrows
     this.right_arrow_hat = new Image();
@@ -328,8 +334,20 @@ class DressUpMinigame extends Minigame {
     this.left_arrow_bottom.src = "https://dinopixel.com/preload/0324/arrow.png";
     this.left_arrow_bottom.width = 100;
     this.left_arrow_bottom.height = 100;
-    // boxes for each outfit
     
+
+    // state machine for each thing
+    this.hat_state = DressUpMinigame.Outfit.DEPRESSED;
+    this.top_state = DressUpMinigame.Outfit.DEPRESSED;
+    this.bottom_state = DressUpMinigame.Outfit.DEPRESSED;
+
+    // the potential fits fr
+    this.hat = new Image();
+    this.hat_depressed = "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.hat_cute = "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png"
+    this.hat_good = "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg"
+    
+
   }
 
 
@@ -356,6 +374,28 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(this.left_arrow_top, CENTER_X - 250- this.left_arrow_top.width / 2, CENTER_Y - 50  - this.left_arrow_top.height / 2, this.left_arrow_top.width, this.left_arrow_top.height);
     ctx.drawImage(this.left_arrow_bottom, CENTER_X - 250- this.left_arrow_bottom.width / 2, CENTER_Y + 100  - this.left_arrow_bottom.height / 2, this.left_arrow_bottom.width, this.left_arrow_bottom.height);
 
+    
+    // yipepee yipeee yipee
+    if (this.hat_state == DressUpMinigame.Outfit.CUTE) {
+      this.hat.src = this.hat_cute;
+      console.log("we are doin things");
+
+    }
+
+    else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
+      this.hat.src = this.hat_good;
+      console.log("we are doin things");
+
+    }
+    else {
+      this.hat.src = this.hat_depressed;
+      console.log("we are doing things");
+    }
+
+    ctx.drawImage(this.hat, CENTER_X - 50, CENTER_Y - 250, 100, 100);
+
+    // CONTROL LOGIC FOR the arrow stuff
+    if ()
     
 
   }
