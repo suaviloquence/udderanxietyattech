@@ -44,12 +44,26 @@ class InputManager {
     this.up = new Set();
     this.mouseX = 0;
     this.mouseY = 0;
+    /**
+     * @type {(() => ())[]}
+     */
+    this.queue = [];
 
-    canvas.addEventListener("keydown", (evt) => this.onKeyDown(evt));
-    canvas.addEventListener("keyup", (evt) => this.onKeyUp(evt));
-    canvas.addEventListener("mousedown", (evt) => this.onMouseDown(evt));
-    canvas.addEventListener("mouseup", (evt) => this.onMouseUp(evt));
-    canvas.addEventListener("mousemove", (evt) => this.onMouseMove(evt));
+    canvas.addEventListener("keydown", (evt) =>
+      this.queue.push(() => this.onKeyDown(evt)),
+    );
+    canvas.addEventListener("keyup", (evt) =>
+      this.queue.push(() => this.onKeyUp(evt)),
+    );
+    canvas.addEventListener("mousedown", (evt) =>
+      this.queue.push(() => this.onMouseDown(evt)),
+    );
+    canvas.addEventListener("mouseup", (evt) =>
+      this.queue.push(() => this.onMouseUp(evt)),
+    );
+    canvas.addEventListener("mousemove", (evt) =>
+      this.queue.push(() => this.onMouseMove(evt)),
+    );
   }
 
   isKeyDown(code) {
@@ -80,10 +94,12 @@ class InputManager {
    * @param {KeyboardEvent} evt
    */
   onKeyDown(evt) {
-    const key = `k${evt.key}`;
-    this.up.delete(key);
-    this.down.add(key);
-    this.pressed.add(key);
+    if (!evt.repeat) {
+      const key = `k${evt.key}`;
+      this.up.delete(key);
+      this.down.add(key);
+      this.pressed.add(key);
+    }
   }
 
   /**
@@ -124,7 +140,15 @@ class InputManager {
     this.mouseY = evt.clientY;
   }
 
-  nextFrame() {
+  frameStart() {
+    for (const f of this.queue) {
+      f();
+    }
+
+    this.queue = [];
+  }
+
+  frameEnd() {
     this.up.clear();
     this.down.clear();
   }
@@ -196,11 +220,13 @@ async function run(game, ctx, inp) {
         resolve(null);
       }
 
+      inp.frameStart();
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
       game.loop(ctx, i, mgr, inp);
       mgr.loop();
+      inp.frameEnd();
     }, 1000.0 / FPS);
   });
 }
@@ -395,7 +421,7 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(this.hat, CENTER_X - 50, CENTER_Y - 250, 100, 100);
 
     // CONTROL LOGIC FOR the arrow stuff
-    if ()
+    
     
 
   }
@@ -431,56 +457,68 @@ class DressUpMinigame extends Minigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
-    ctx.fillStyle = "black";
-    ctx.fillRect(WIDTH / 2 - 64, 0, 128, 128);
+    switch (this.state) {
+      case 4:
+        mgr.timeout(FPS, () => {
+          this.state--;
+          mgr.timeout(FPS, () => {
+            this.state--;
+            mgr.timeout(FPS, () => {
+              this.state--;
+            });
+          });
+        });
+        this.state--;
+      case 3:
+      case 2:
+      case 1:
+        const l = this.state.toString();
+        ctx.font = "40px sans-serif";
+        const dims = ctx.measureText(l);
+        ctx.fillStyle = "green";
+        ctx.fillText(
+          l,
+          WIDTH / 2 - dims.width / 2,
+          HEIGHT / 2 - dims.height / 2,
+        );
+        break;
+      case 0:
+        ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
 
-    const C = 10;
+        const C = 1;
 
-    let ax = 0;
-    let ay = 0;
+        const left = inp.isKeyDown(ARROW_LEFT);
+        const right = inp.isKeyDown(ARROW_RIGHT);
 
-    const dx = this.x - WIDTH / 2;
-    const dy = this.y - 64;
+        this.vy -= C;
 
-    const d = dy * dy + dx * dx;
+        const D = 5;
 
-    if (d !== 0) {
-      const denom = Math.max(0.01, Math.pow(d, 3 / 4));
-      ax += -(Math.sign(dx) * (C * Math.pow(dx, 2))) / denom;
-      ay += -(Math.sign(dy) * (C * (Math.abs(dy) + Math.abs(dx)))) / denom;
+        if (left && !right) {
+          // this.vx -= D;
+          this.vy += D;
+        }
+
+        if (right && !left) {
+          // this.vx += D;
+          this.vy += D;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.x = Math.min(WIDTH, Math.max(0, this.x));
+        this.y = Math.min(HEIGHT, Math.max(0, this.y));
+
+        ctx.drawImage(
+          this.patty,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height,
+        );
+        break;
     }
-
-    const left = inp.isKeyDown(ARROW_LEFT);
-    const right = inp.isKeyDown(ARROW_RIGHT);
-
-    const D = 1.2;
-
-    if (left && !right) {
-      this.vx -= D;
-      this.vy += D;
-    }
-
-    if (right && !left) {
-      this.vx += D;
-      this.vy += D;
-    }
-
-    console.dir(
-      `(${ax}, ${ay}), (${this.vx}, ${this.vy}), (${this.x}, ${this.y})`,
-    );
-
-    this.vx += ax;
-    this.vy += ay;
-    this.x += this.vx;
-    this.y += this.vy;
-
-    ctx.fillStyle = "#0xdeadbe";
-    ctx.fillRect(
-      this.x - this.width / 2,
-      this.y - this.height / 2,
-      this.width,
-      this.height,
-    );
   }
 
   /**
