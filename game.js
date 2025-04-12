@@ -44,25 +44,27 @@ class InputManager {
     this.up = new Set();
     this.mouseX = 0;
     this.mouseY = 0;
+    this.offsetX = canvas.offsetLeft;
+    this.offsetY = canvas.offsetTop;
     /**
      * @type {(() => ())[]}
      */
     this.queue = [];
 
     canvas.addEventListener("keydown", (evt) =>
-      this.queue.push(() => this.onKeyDown(evt)),
+      this.queue.push(() => this.onKeyDown(evt))
     );
     canvas.addEventListener("keyup", (evt) =>
-      this.queue.push(() => this.onKeyUp(evt)),
+      this.queue.push(() => this.onKeyUp(evt))
     );
     canvas.addEventListener("mousedown", (evt) =>
-      this.queue.push(() => this.onMouseDown(evt)),
+      this.queue.push(() => this.onMouseDown(evt))
     );
     canvas.addEventListener("mouseup", (evt) =>
-      this.queue.push(() => this.onMouseUp(evt)),
+      this.queue.push(() => this.onMouseUp(evt))
     );
     canvas.addEventListener("mousemove", (evt) =>
-      this.queue.push(() => this.onMouseMove(evt)),
+      this.queue.push(() => this.onMouseMove(evt))
     );
   }
 
@@ -136,8 +138,8 @@ class InputManager {
    * @param {MouseEvent} evt
    */
   onMouseMove(evt) {
-    this.mouseX = evt.clientX;
-    this.mouseY = evt.clientY;
+    this.mouseX = evt.clientX - this.offsetX;
+    this.mouseY = evt.clientY - this.offsetY;
   }
 
   frameStart() {
@@ -302,11 +304,10 @@ class MeowMinigame extends Minigame {
 }
 
 class DressUpMinigame extends Minigame {
-
   static Outfit = {
     CUTE: 1,
     GOOD: 2,
-    DEPRESSED: 0
+    DEPRESSED: 0,
   };
 
   /**
@@ -322,47 +323,67 @@ class DressUpMinigame extends Minigame {
 
     // for the confirm button
     ctx.fillStyle = "grey";
-    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12);
+    ctx.fillRect(
+      CENTER_X - CENTER_X / 2,
+      CENTER_Y + 100 + CENTER_Y / 2,
+      WIDTH / 2,
+      HEIGHT / 12
+    );
 
     // patty TODO: CHANGE TO ACTUAL PHOTO
     this.patty = new Image();
-    this.patty.src = "https://img.freepik.com/free-vector/cute-cartoon-cow-illustration_1308-176774.jpg";
-    
+    this.patty.src =
+      "https://img.freepik.com/free-vector/cute-cartoon-cow-illustration_1308-176774.jpg";
 
     // arrows
     this.right_arrow_hat = new Image();
-    this.right_arrow_hat.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_hat.src =
+      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
     this.right_arrow_hat.width = 100;
     this.right_arrow_hat.height = 100;
-    this.right_arrow_hatx = CENTER_X + 250- this.right_arrow_hat.width / 2;
+    this.right_arrow_hatx = CENTER_X + 250 - this.right_arrow_hat.width / 2;
     this.right_arrow_haty = CENTER_Y - 200 - this.right_arrow_hat.height / 2;
 
     this.right_arrow_top = new Image();
-    this.right_arrow_top.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_top.src =
+      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
     this.right_arrow_top.width = 100;
     this.right_arrow_top.height = 100;
+    this.right_arrow_topx = CENTER_X + 250 - this.right_arrow_top.width / 2;
+    this.right_arrow_topy = CENTER_Y - 50 - this.right_arrow_top.height / 2;
 
     this.right_arrow_bottom = new Image();
-    this.right_arrow_bottom.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_bottom.src =
+      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
     this.right_arrow_bottom.width = 100;
     this.right_arrow_bottom.height = 100;
+    this.right_arrow_bottomx =
+      CENTER_X + 250 - this.right_arrow_bottom.width / 2;
+    this.right_arrow_bottomy =
+      CENTER_Y + 100 - this.right_arrow_bottom.height / 2;
 
     // for these arrows, flip the other ones... maybe do it after downloading instead of how they're being hosted rn
     this.left_arrow_hat = new Image();
     this.left_arrow_hat.src = "https://dinopixel.com/preload/0324/arrow.png";
     this.left_arrow_hat.width = 100;
     this.left_arrow_hat.height = 100;
+    this.left_arrow_hatx = CENTER_X - 250 - this.left_arrow_hat.width / 2;
+    this.left_arrow_haty = CENTER_Y - 200 - this.left_arrow_hat.height / 2;
 
     this.left_arrow_top = new Image();
     this.left_arrow_top.src = "https://dinopixel.com/preload/0324/arrow.png";
     this.left_arrow_top.width = 100;
     this.left_arrow_top.height = 100;
+    this.left_arrow_topx = CENTER_X - 250 - this.left_arrow_top.width / 2;
+    this.left_arrow_topy = CENTER_Y - 50 - this.left_arrow_top.height / 2;
 
     this.left_arrow_bottom = new Image();
     this.left_arrow_bottom.src = "https://dinopixel.com/preload/0324/arrow.png";
     this.left_arrow_bottom.width = 100;
     this.left_arrow_bottom.height = 100;
-    
+    this.left_arrow_bottomx = CENTER_X - 250 - this.left_arrow_bottom.width / 2;
+    this.left_arrow_bottomy =
+      CENTER_Y + 100 - this.left_arrow_bottom.height / 2;
 
     // state machine for each thing
     this.hat_state = DressUpMinigame.Outfit.DEPRESSED;
@@ -371,97 +392,295 @@ class DressUpMinigame extends Minigame {
 
     // the potential fits fr
     this.hat = new Image();
-    this.hat_depressed = "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
-    this.hat_cute = "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png"
-    this.hat_good = "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg"
-    
+    this.hat_depressed =
+      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.hat_cute =
+      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.hat_good =
+      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
 
+    this.top = new Image();
+    this.top_depressed =
+      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.top_cute =
+      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.top_good =
+      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
+
+    this.bottom = new Image();
+    this.bottom_depressed =
+      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.bottom_cute =
+      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.bottom_good =
+      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
   }
-
 
   /**
    * @param {CanvasRenderingContext2D} ctx
    * @param {Number} i
-   * @param {InputManager} inp 
+   * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
     // patty in the middle with arrows that are clickable to change that outfit
     // button will be the ending to the loop if not the timer
     // timer in the top left
 
-    
     // for the confirm button
     ctx.fillStyle = "grey";
-    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12);
+    ctx.fillRect(
+      CENTER_X - CENTER_X / 2,
+      CENTER_Y + 100 + CENTER_Y / 2,
+      WIDTH / 2,
+      HEIGHT / 12
+    );
 
     // the constant images
-    ctx.drawImage(this.patty, CENTER_X - WIDTH / 4, CENTER_Y - HEIGHT / 3, WIDTH / 2, HEIGHT / 1.5);
-    ctx.drawImage(this.right_arrow_hat, this.right_arrow_hatx, this.right_arrow_haty, 100, 100);
-    ctx.drawImage(this.right_arrow_top, CENTER_X + 250- this.right_arrow_top.width / 2, CENTER_Y - 50 - this.right_arrow_top.height / 2, this.right_arrow_top.width, this.right_arrow_top.height);
-    ctx.drawImage(this.right_arrow_bottom, CENTER_X + 250- this.right_arrow_bottom.width / 2, CENTER_Y + 100  - this.right_arrow_bottom.height / 2, this.right_arrow_bottom.width, this.right_arrow_bottom.height);
-    ctx.drawImage(this.left_arrow_hat, CENTER_X - 250- this.left_arrow_hat.width / 2, CENTER_Y - 200 - this.left_arrow_hat.height / 2, this.left_arrow_hat.width, this.left_arrow_hat.height);
-    ctx.drawImage(this.left_arrow_top, CENTER_X - 250- this.left_arrow_top.width / 2, CENTER_Y - 50  - this.left_arrow_top.height / 2, this.left_arrow_top.width, this.left_arrow_top.height);
-    ctx.drawImage(this.left_arrow_bottom, CENTER_X - 250- this.left_arrow_bottom.width / 2, CENTER_Y + 100  - this.left_arrow_bottom.height / 2, this.left_arrow_bottom.width, this.left_arrow_bottom.height);
+    ctx.drawImage(
+      this.patty,
+      CENTER_X - WIDTH / 4,
+      CENTER_Y - HEIGHT / 3,
+      WIDTH / 2,
+      HEIGHT / 1.5
+    );
+    ctx.drawImage(
+      this.right_arrow_hat,
+      this.right_arrow_hatx,
+      this.right_arrow_haty,
+      100,
+      100
+    );
 
-    
+    ctx.drawImage(
+      this.right_arrow_top,
+      this.right_arrow_topx,
+      this.right_arrow_topy,
+      this.right_arrow_top.width,
+      this.right_arrow_top.height
+    );
+    ctx.drawImage(
+      this.right_arrow_bottom,
+      this.right_arrow_bottomx,
+      this.right_arrow_bottomy,
+      this.right_arrow_bottom.width,
+      this.right_arrow_bottom.height
+    );
+    ctx.drawImage(
+      this.left_arrow_hat,
+      this.left_arrow_hatx,
+      this.left_arrow_haty,
+      this.left_arrow_hat.width,
+      this.left_arrow_hat.height
+    );
+    ctx.drawImage(
+      this.left_arrow_top,
+      this.left_arrow_topx,
+      this.left_arrow_topy,
+      this.left_arrow_top.width,
+      this.left_arrow_top.height
+    );
+    ctx.drawImage(
+      this.left_arrow_bottom,
+      this.left_arrow_bottomx,
+      this.left_arrow_bottomy,
+      this.left_arrow_bottom.width,
+      this.left_arrow_bottom.height
+    );
+
     // yipepee yipeee yipee
     if (this.hat_state == DressUpMinigame.Outfit.CUTE) {
       this.hat.src = this.hat_cute;
       console.log("we are doin things");
-
-    }
-
-    else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
+    } else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
       this.hat.src = this.hat_good;
       console.log("we are doin things");
-
-    }
-    else {
+    } else {
       this.hat.src = this.hat_depressed;
       console.log("we are doing things");
     }
 
-    ctx.drawImage(this.hat, CENTER_X - 50, CENTER_Y - 250, 100, 100);
+    // yipepee yipeee yipee
+    if (this.top_state == DressUpMinigame.Outfit.CUTE) {
+      this.top.src = this.top_cute;
+      console.log("we are doin things");
+    } else if (this.top_state == DressUpMinigame.Outfit.GOOD) {
+      this.top.src = this.top_good;
+      console.log("we are doin things");
+    } else {
+      this.top.src = this.top_depressed;
+      console.log("we are doing things");
+    }
+
+    // yipepee yipeee yipee
+    if (this.bottom_state == DressUpMinigame.Outfit.CUTE) {
+      this.bottom.src = this.bottom_cute;
+      console.log("we are doin things");
+    } else if (this.bottom_state == DressUpMinigame.Outfit.GOOD) {
+      this.bottom.src = this.bottom_good;
+      console.log("we are doin things");
+    } else {
+      this.bottom.src = this.bottom_depressed;
+      console.log("we are doing things");
+    }
+
+    ctx.drawImage(this.hat, CENTER_X - 50, this.right_arrow_haty, 100, 100);
+    ctx.drawImage(this.top, CENTER_X - 50, this.right_arrow_topy, 100, 100);
+    ctx.drawImage(
+      this.bottom,
+      CENTER_X - 50,
+      this.right_arrow_bottomy,
+      100,
+      100
+    );
 
     // CONTROL LOGIC FOR the arrow stuff
-    // if (inp.isMouseDown(MOUSE_LEFT) &&
-    // (this.right_arrow_hatx <= inp.mouseX /** && inp.mouseX <= this.right_arrow_hatx + this.right_arrow_hat.width*/ ) &&
-    // (this.right_arrow_haty <= inp.mouseY && inp.mouseY <= this.right_arrow_haty + this.right_arrow_hat.height)) {
-    //  console.log("clickable fr");
-    //}
-    console.log("inp is", inp);
 
-    if (inp.isMousePressed(MOUSE_LEFT)) {
-      console.log("mouse pressed");
+    //right arrow hat
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.right_arrow_hatx &&
+      inp.mouseX <= this.right_arrow_hatx + 100 &&
+      inp.mouseY >= this.right_arrow_haty &&
+      inp.mouseY <= this.right_arrow_haty + 100
+    ) {
+      console.log("mouse pressed: right arrow hat");
+
+      //use state machine to figure out which hat to do
+      if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.hat_state = DressUpMinigame.Outfit.GOOD;
+      } else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
+        this.hat_state = DressUpMinigame.Outfit.CUTE;
+      } else {
+        this.hat_state = DressUpMinigame.Outfit.DEPRESSED;
+      }
+    }
+
+    // left arrow hat
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.left_arrow_hatx &&
+      inp.mouseX <= this.left_arrow_hatx + 100 &&
+      inp.mouseY >= this.left_arrow_haty &&
+      inp.mouseY <= this.left_arrow_haty + 100
+    ) {
+      console.log("mouse pressed: left arrow hat");
+
+      //use state machine to figure out which hat to do
+      if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.hat_state = DressUpMinigame.Outfit.CUTE;
+      } else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
+        this.hat_state = DressUpMinigame.Outfit.DEPRESSED;
+      } else {
+        this.hat_state = DressUpMinigame.Outfit.GOOD;
+      }
+    }
+
+    //right arrow top
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.right_arrow_topx &&
+      inp.mouseX <= this.right_arrow_topx + 100 &&
+      inp.mouseY >= this.right_arrow_topy &&
+      inp.mouseY <= this.right_arrow_topy + 100
+    ) {
+      console.log("mouse pressed: right arrow top");
+
+      //use state machine to figure out which hat to do
+      if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.top_state = DressUpMinigame.Outfit.GOOD;
+      } else if (this.top_state == DressUpMinigame.Outfit.GOOD) {
+        this.top_state = DressUpMinigame.Outfit.CUTE;
+      } else {
+        this.top_state = DressUpMinigame.Outfit.DEPRESSED;
+      }
+    }
+
+    // left arrow top TODO: NEED TO MAKE A DIFFERENT STATE MACHINE FOR EACH THANG
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.left_arrow_topx &&
+      inp.mouseX <= this.left_arrow_topx + 100 &&
+      inp.mouseY >= this.left_arrow_topy &&
+      inp.mouseY <= this.left_arrow_topy + 100
+    ) {
+      console.log("mouse pressed: left arrow top");
+
+      //use state machine to figure out which hat to do
+      if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.top_state = DressUpMinigame.Outfit.CUTE;
+      } else if (this.top_state == DressUpMinigame.Outfit.GOOD) {
+        this.top_state = DressUpMinigame.Outfit.DEPRESSED;
+      } else {
+        this.top_state = DressUpMinigame.Outfit.GOOD;
+      }
+    }
+
+    //right arrow bottom
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.right_arrow_bottomx &&
+      inp.mouseX <= this.right_arrow_bottomx + 100 &&
+      inp.mouseY >= this.right_arrow_bottomy &&
+      inp.mouseY <= this.right_arrow_bottomy + 100
+    ) {
+      console.log("mouse pressed: right arrow bottom");
+
+      //use state machine to figure out which hat to do
+      if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.bottom_state = DressUpMinigame.Outfit.GOOD;
+      } else if (this.bottom_state == DressUpMinigame.Outfit.GOOD) {
+        this.bottom_state = DressUpMinigame.Outfit.CUTE;
+      } else {
+        this.bottom_state = DressUpMinigame.Outfit.DEPRESSED;
+      }
+    }
+
+    // left arrow top TODO: NEED TO MAKE A DIFFERENT STATE MACHINE FOR EACH THANG
+    if (
+      inp.isMouseDown(MOUSE_LEFT) &&
+      inp.mouseX >= this.left_arrow_bottomx &&
+      inp.mouseX <= this.left_arrow_bottomx + 100 &&
+      inp.mouseY >= this.left_arrow_bottomy &&
+      inp.mouseY <= this.left_arrow_bottomy + 100
+    ) {
+      console.log("mouse pressed: left arrow bottom");
+
+      //use state machine to figure out which hat to do
+      if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
+        this.bottom_state = DressUpMinigame.Outfit.CUTE;
+      } else if (this.bottom_state == DressUpMinigame.Outfit.GOOD) {
+        this.bottom_state = DressUpMinigame.Outfit.DEPRESSED;
+      } else {
+        this.bottom_state = DressUpMinigame.Outfit.GOOD;
+      }
     }
   }
 
   /**
    * @returns {Number}
    */
-  time () {
+  time() {
     // how long we want minigame to last!
     return 20;
   }
-  
 }
 
 class PhoneInBedMinigame {
-    constructor() {
-      this.x = WIDTH / 2;
-      this.y = (HEIGHT * 3) / 4;
-      this.vx = 0;
-      this.vy = 0;
-      this.width = 64;
-      this.height = 96;
-      this.phone;
-    }
+  constructor() {
+    this.x = WIDTH / 2;
+    this.y = (HEIGHT * 3) / 4;
+    this.vx = 0;
+    this.vy = 0;
+    this.width = 64;
+    this.height = 96;
+    this.phone;
+  }
 
   /**
    * @param {CanvasRenderingContext2D} ctx
    */
   setup(ctx) {}
-  
+
   /**
    * @param {LerpManager} mgr
    * @param {InputManager} inp
@@ -489,7 +708,7 @@ class PhoneInBedMinigame {
         ctx.fillText(
           l,
           WIDTH / 2 - dims.width / 2,
-          HEIGHT / 2 - dims.height / 2,
+          HEIGHT / 2 - dims.height / 2
         );
         break;
       case 0:
@@ -525,7 +744,7 @@ class PhoneInBedMinigame {
           this.x - this.width / 2,
           this.y - this.height / 2,
           this.width,
-          this.height,
+          this.height
         );
         break;
     }
@@ -537,7 +756,4 @@ class PhoneInBedMinigame {
   time() {
     return 10;
   }
-  
 }
-
-
