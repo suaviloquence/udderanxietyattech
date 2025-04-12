@@ -71,7 +71,7 @@ class InputManager {
    * @param {KeyboardEvent} evt
    */
   onKeyDown(evt) {
-    this.up.remove({ key: evt.key });
+    this.up.delete({ key: evt.key });
     this.down.add({ key: evt.key });
     this.pressed.add({ key: evt.key });
   }
@@ -80,8 +80,8 @@ class InputManager {
    * @param {KeyboardEvent} evt
    */
   onKeyUp(evt) {
-    this.down.remove({ key: evt.key });
-    this.pressed.remove({ key: evt.key });
+    this.down.delete({ key: evt.key });
+    this.pressed.delete({ key: evt.key });
     this.up.add({ key: evt.key });
   }
 
@@ -91,15 +91,15 @@ class InputManager {
   onMouseDown(evt) {
     this.down.add({ mouse: evt.button });
     this.pressed.add({ mouse: evt.button });
-    this.up.remove({ mouse: evt.button });
+    this.up.delete({ mouse: evt.button });
   }
 
   /**
    * @param {MouseEvent} evt
    */
   onMouseUp(evt) {
-    this.down.remove({ mouse: evt.button });
-    this.pressed.remove({ mouse: evt.button });
+    this.down.delete({ mouse: evt.button });
+    this.pressed.delete({ mouse: evt.button });
     this.up.add({ mouse: evt.button });
   }
 
@@ -272,7 +272,48 @@ class DressUpMinigame extends Minigame {
 
     // for the confirm button
     ctx.fillStyle = "grey";
-    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12)
+    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12);
+
+    // patty TODO: CHANGE TO ACTUAL PHOTO
+    this.patty = new Image();
+    this.patty.src = "https://img.freepik.com/free-vector/cute-cartoon-cow-illustration_1308-176774.jpg";
+    this.patty.onload = () => {
+      ctx.drawImage(this.patty, 100, 100, 200, 150);
+    };
+
+    // arrows
+    this.right_arrow_hat = new Image();
+    this.right_arrow_hat.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_hat.width = 100;
+    this.right_arrow_hat.height = 100;
+
+    this.right_arrow_top = new Image();
+    this.right_arrow_top.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_top.width = 100;
+    this.right_arrow_top.height = 100;
+
+    this.right_arrow_bottom = new Image();
+    this.right_arrow_bottom.src = "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_bottom.width = 100;
+    this.right_arrow_bottom.height = 100;
+
+    // for these arrows, flip the other ones... maybe do it after downloading instead of how they're being hosted rn
+    this.left_arrow_hat = new Image();
+    this.left_arrow_hat.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_hat.width = 100;
+    this.left_arrow_hat.height = 100;
+
+    this.left_arrow_top = new Image();
+    this.left_arrow_top.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_top.width = 100;
+    this.left_arrow_top.height = 100;
+
+    this.left_arrow_bottom = new Image();
+    this.left_arrow_bottom.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_bottom.width = 100;
+    this.left_arrow_bottom.height = 100;
+    // boxes for each outfit
+    
   }
 
   /**
@@ -281,6 +322,24 @@ class DressUpMinigame extends Minigame {
    */
   loop(ctx, i) {
     // patty in the middle with arrows that are clickable to change that outfit
+    // button will be the ending to the loop if not the timer
+    // timer in the top left
+
+    
+    // for the confirm button
+    ctx.fillStyle = "grey";
+    ctx.fillRect(CENTER_X - (CENTER_X / 2), CENTER_Y + 100 + (CENTER_Y / 2), WIDTH / 2, HEIGHT /12);
+
+    // the constant images
+    ctx.drawImage(this.patty, CENTER_X - WIDTH / 4, CENTER_Y - HEIGHT / 3, WIDTH / 2, HEIGHT / 1.5);
+    ctx.drawImage(this.right_arrow_hat, CENTER_X + 250- this.right_arrow_hat.width / 2, CENTER_Y - 200 - this.right_arrow_hat.height / 2, this.right_arrow_hat.width, this.right_arrow_hat.height);
+    ctx.drawImage(this.right_arrow_top, CENTER_X + 250- this.right_arrow_top.width / 2, CENTER_Y - 50 - this.right_arrow_top.height / 2, this.right_arrow_top.width, this.right_arrow_top.height);
+    ctx.drawImage(this.right_arrow_bottom, CENTER_X + 250- this.right_arrow_bottom.width / 2, CENTER_Y + 100  - this.right_arrow_bottom.height / 2, this.right_arrow_bottom.width, this.right_arrow_bottom.height);
+    ctx.drawImage(this.left_arrow_hat, CENTER_X - 250- this.left_arrow_hat.width / 2, CENTER_Y - 200 - this.left_arrow_hat.height / 2, this.left_arrow_hat.width, this.left_arrow_hat.height);
+    ctx.drawImage(this.left_arrow_top, CENTER_X - 250- this.left_arrow_top.width / 2, CENTER_Y - 50  - this.left_arrow_top.height / 2, this.left_arrow_top.width, this.left_arrow_top.height);
+    ctx.drawImage(this.left_arrow_bottom, CENTER_X - 250- this.left_arrow_bottom.width / 2, CENTER_Y + 100  - this.left_arrow_bottom.height / 2, this.left_arrow_bottom.width, this.left_arrow_bottom.height);
+
+    
 
 
 
