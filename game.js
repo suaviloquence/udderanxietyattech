@@ -258,3 +258,26 @@ class MeowMinigame extends Minigame {
     }
   }
 }
+
+class PhoneInBedMinigame {
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  setup(ctx) {
+    throw new Error("unimplemented");
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   * @param {LerpManager} mgr
+   */
+  loop(ctx, i, mgr) {}
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    return 10;
+  }
+}
