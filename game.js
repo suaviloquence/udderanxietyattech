@@ -196,6 +196,8 @@ class LerpManager {
       },
       left: time,
     });
+
+    console.dir(this.lerps);
   }
 }
 
@@ -327,30 +329,27 @@ class PhoneInBedMinigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
+    console.dir(this.state);
     switch (this.state) {
       case 4:
-        mgr.timeout(FPS, () => {
+        mgr.timeout(() => {
           this.state--;
-          mgr.timeout(FPS, () => {
+          mgr.timeout(() => {
             this.state--;
-            mgr.timeout(FPS, () => {
+            mgr.timeout(() => {
               this.state--;
-            });
-          });
-        });
+            }, FPS);
+          }, FPS);
+        }, FPS);
         this.state--;
       case 3:
       case 2:
       case 1:
         const l = this.state.toString();
         ctx.font = "40px sans-serif";
-        const dims = ctx.measureText(l);
-        ctx.fillStyle = "green";
-        ctx.fillText(
-          l,
-          WIDTH / 2 - dims.width / 2,
-          HEIGHT / 2 - dims.height / 2,
-        );
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
         break;
       case 0:
         ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
