@@ -22,18 +22,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   await run(new IntroMinigame(), ctx, inp, 1);
 
   let dimness = 0.5;
-  let boss;
-  do {
-    boss = new BossFight();
-    dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
-    dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
-    dimness = await run(new CookingMinigame(), ctx, inp, dimness);
-    dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
-    dimness = await run(new MazeMinigame(), ctx, inp, dimness);
-    dimness = await run(boss, ctx, inp, dimness);
-  } while (!boss.win());
+  run(new BossFight(), ctx, inp, dimness);
+  // let boss;
+  // do {
+  //   boss = new BossFight();
+  //   dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+  //   dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+  //   dimness = await run(new CookingMinigame(), ctx, inp, dimness);
+  //   dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+  //   dimness = await run(new MazeMinigame(), ctx, inp, dimness);
+  //   dimness = await run(boss, ctx, inp, dimness);
+  // } while (!boss.win());
 
-  dimness = await run(new MeowMinigame(), ctx, inp, dimness);
+  // dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
 class InputManager {
@@ -67,19 +68,19 @@ class InputManager {
     this.queue = [];
 
     canvas.addEventListener("keydown", (evt) =>
-      this.queue.push(() => this.onKeyDown(evt)),
+      this.queue.push(() => this.onKeyDown(evt))
     );
     canvas.addEventListener("keyup", (evt) =>
-      this.queue.push(() => this.onKeyUp(evt)),
+      this.queue.push(() => this.onKeyUp(evt))
     );
     canvas.addEventListener("mousedown", (evt) =>
-      this.queue.push(() => this.onMouseDown(evt)),
+      this.queue.push(() => this.onMouseDown(evt))
     );
     canvas.addEventListener("mouseup", (evt) =>
-      this.queue.push(() => this.onMouseUp(evt)),
+      this.queue.push(() => this.onMouseUp(evt))
     );
     canvas.addEventListener("mousemove", (evt) =>
-      this.queue.push(() => this.onMouseMove(evt)),
+      this.queue.push(() => this.onMouseMove(evt))
     );
   }
 
@@ -474,7 +475,7 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(
       this.confirm,
       CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2,
+      CENTER_Y + 100 + CENTER_Y / 2
     ),
       WIDTH / 2,
       HEIGHT / 2;
@@ -485,14 +486,14 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - 50 - HEIGHT / 2.2,
       WIDTH / 1.1,
-      HEIGHT / 1.1,
+      HEIGHT / 1.1
     );
     ctx.drawImage(
       this.right_arrow_hat,
       this.right_arrow_hatx,
       this.right_arrow_haty,
       100,
-      100,
+      100
     );
 
     ctx.drawImage(
@@ -500,35 +501,35 @@ class DressUpMinigame extends Minigame {
       this.right_arrow_topx,
       this.right_arrow_topy,
       this.right_arrow_top.width,
-      this.right_arrow_top.height,
+      this.right_arrow_top.height
     );
     ctx.drawImage(
       this.right_arrow_bottom,
       this.right_arrow_bottomx,
       this.right_arrow_bottomy,
       this.right_arrow_bottom.width,
-      this.right_arrow_bottom.height,
+      this.right_arrow_bottom.height
     );
     ctx.drawImage(
       this.left_arrow_hat,
       this.left_arrow_hatx,
       this.left_arrow_haty,
       this.left_arrow_hat.width,
-      this.left_arrow_hat.height,
+      this.left_arrow_hat.height
     );
     ctx.drawImage(
       this.left_arrow_top,
       this.left_arrow_topx,
       this.left_arrow_topy,
       this.left_arrow_top.width,
-      this.left_arrow_top.height,
+      this.left_arrow_top.height
     );
     ctx.drawImage(
       this.left_arrow_bottom,
       this.left_arrow_bottomx,
       this.left_arrow_bottomy,
       this.left_arrow_bottom.width,
-      this.left_arrow_bottom.height,
+      this.left_arrow_bottom.height
     );
 
     // yipepee yipeee yipee
@@ -572,21 +573,21 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1,
+      HEIGHT / 1.1
     );
     ctx.drawImage(
       this.top,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1,
+      HEIGHT / 1.1
     );
     ctx.drawImage(
       this.bottom,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1,
+      HEIGHT / 1.1
     );
 
     // CONTROL LOGIC FOR the arrow stuff
@@ -987,6 +988,12 @@ class BossFight extends Minigame {
     this.evilBarista = load("assets/EVIL_BARISTA.png");
     this.barista = this.normalBarista;
 
+    // arrows
+    this.arrow_down = load("assets/dressup/ARROW_D.png");
+    this.arrow_up = load("assets/dressup/ARROW_U.png");
+    this.arrow_right = load("assets/dressup/ARROW_L.png");
+    this.arrow_left = load("assets/dressup/ARROW_R.png");
+
     this.patty = new Image();
     this.patty.src = "assets/PATTY.png";
 
@@ -1003,6 +1010,109 @@ class BossFight extends Minigame {
 
     // MASH
     this.mashes = 0;
+
+    // PATTERN
+    this.arrows = [
+      {
+        img: this.arrow_up,
+        x: 0,
+        y: HEIGHT - HEIGHT / 4,
+        width: WIDTH / 4,
+        height: HEIGHT / 4,
+        index: 0,
+      },
+      {
+        img: this.arrow_down,
+        x: WIDTH / 4,
+        y: HEIGHT - HEIGHT / 4,
+        width: WIDTH / 4,
+        height: HEIGHT / 4,
+        index: 1,
+      },
+      {
+        img: this.arrow_left,
+        x: WIDTH / 2,
+        y: HEIGHT - HEIGHT / 4,
+        width: WIDTH / 4,
+        height: HEIGHT / 4,
+        index: 2,
+      },
+      {
+        img: this.arrow_right,
+        x: (3 * WIDTH) / 4,
+        y: HEIGHT - HEIGHT / 4,
+        width: WIDTH / 4,
+        height: HEIGHT / 4,
+        index: 3,
+      },
+    ];
+    this.drawArrows(ctx);
+
+    this.arrow_sequence = [];
+    this.userInput = [];
+    this.acceptingInput = false;
+    this.currentFlash = -1;
+    this.lastFlashTime = 0;
+    this.flashStep = 0;
+    this.flashInterval = 600;
+
+    this.userFlashIndex = -1;
+    this.userFlashTime = 0;
+    this.userFlashInterval = 600;
+
+    this.nextPatternRound();
+  }
+
+  nextPatternRound() {
+    const next = Math.floor(Math.random() * 4);
+    this.arrow_sequence.push(next);
+    this.userInput = [];
+    this.flashStep = 0;
+    this.lastFlashTime = performance.now();
+    this.acceptingInput = false;
+    this.currentFlash = -1;
+  }
+
+  flashNextArrow() {
+    if (this.flashStep < this.arrow_sequence.length) {
+      this.currentFlash = this.arrow_sequence[this.flashStep];
+      const r = Math.random() * 255;
+      const g = Math.random() * 255;
+      const b = Math.random() * 255;
+      this.currentColor = `rgb(${r}, ${g}, ${b})`;
+      this.flashStep++;
+      this.lastFlashTime = performance.now();
+    } else {
+      this.acceptingInput = true; // Allow user input after sequence is flashed
+      this.currentFlash = -1;
+      this.currentColor = null;
+    }
+  }
+
+  drawArrows(ctx) {
+    // Draw all tiles in the grid (always visible)
+    for (let arrow of this.arrows) {
+      ctx.drawImage(arrow.img, arrow.x, arrow.y, arrow.width, arrow.height);
+    }
+  }
+
+  drawFlashingArrow(ctx, color) {
+    // Draw the tile that's currently flashing
+    if (this.currentFlash !== -1) {
+      const arrow = this.arrows[this.currentFlash];
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = color; // Highlight the flashing tile with red
+      ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
+    }
+  }
+
+  resetGame() {
+    // Reset the game for a new round
+    console.log("Game Over! Resetting...");
+    this.arrow_sequence = [];
+    this.userInput = [];
+    this.acceptingInput = false;
+    // this.nextRound();
   }
 
   /**
@@ -1018,6 +1128,7 @@ class BossFight extends Minigame {
 
     // OUR CHARACTERS
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
 
     switch (this.game_state) {
       case BossFight.Game_state.default:
@@ -1091,6 +1202,7 @@ class BossFight extends Minigame {
             ready
           ) {
             this.prompt_text = BossFight.are_you_sure.yes;
+            this.barista = this.evilBarista;
             console.log("yes girl");
           }
         }
@@ -1120,7 +1232,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2,
+          HEIGHT / 2
         );
 
         if (this.mashes >= 100 / 5) {
@@ -1139,7 +1251,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2,
+          HEIGHT / 2
         );
         break;
       case BossFight.Game_state.mash_success:
@@ -1159,7 +1271,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2,
+          HEIGHT / 2
         );
 
         if (this.cancel) {
@@ -1182,11 +1294,84 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2,
+          HEIGHT / 2
         );
 
         this.cancel = null;
         this.game_state = BossFight.Game_state.pattern;
+        break;
+      case BossFight.Game_state.pattern:
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+        this.drawArrows(ctx);
+
+        const currentTime = performance.now();
+
+        if (!this.acceptingInput) {
+          if (currentTime - this.lastFlashTime >= this.flashInterval) {
+            this.flashNextArrow();
+          }
+
+          if (this.currentFlash !== -1) {
+            this.drawFlashingArrow(ctx, this.currentColor);
+          }
+        }
+
+        // 🔵 Show blue flash if user clicked recently
+        if (this.userFlashIndex !== -1) {
+          if (currentTime - this.userFlashTime <= this.userFlashInterval) {
+            const arrow = this.arrows[this.userFlashIndex];
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = "#0000FF";
+            ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
+          } else {
+            this.userFlashIndex = -1;
+          }
+        }
+
+        // If the game is in the input phase, check the user's input
+        if (this.acceptingInput) {
+          if (inp.isMouseDown(MOUSE_LEFT)) {
+            // Check if the user clicked on any tile
+            const mouseX = inp.mouseX;
+            const mouseY = inp.mouseY;
+
+            for (let arrow of this.arrows) {
+              if (
+                mouseX >= arrow.x &&
+                mouseX <= arrow.x + arrow.width &&
+                mouseY >= arrow.y &&
+                mouseY <= arrow.y + arrow.height
+              ) {
+                this.userInput.push(arrow.index); // Store user input
+
+                // TODO: i want to flash the tile pressed blue
+
+                // Flash the tile blue
+                this.userFlashIndex = arrow.index;
+                this.userFlashTime = performance.now(); // Flash duration (e.g., 300ms)
+
+                if (this.userInput.length === this.arrow_sequence.length) {
+                  if (this.userInput.join() === this.arrow_sequence.join()) {
+                    console.log("Correct sequence!");
+                    if (this.userInput.length === 7) {
+                      this.resetGame();
+                    }
+                    setTimeout(() => {
+                      this.nextPatternRound();
+                    }, 600);
+                  } else {
+                    console.log("Incorrect sequence!");
+                    this.resetGame();
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
         break;
       case BossFight.Game_state.idle:
       default:
@@ -1202,7 +1387,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2,
+          HEIGHT / 2
         );
         break;
     }
@@ -1220,13 +1405,14 @@ class BossFight extends Minigame {
    * @returns {Number}
    */
   time() {
-    switch (this.game_state) {
-      case BossFight.Game_state.win:
-      case BossFight.Game_state.loss:
-        return 0;
-      default:
-        return 1000;
-    }
+    // switch (this.game_state) {
+    //   case BossFight.Game_state.win:
+    //   case BossFight.Game_state.loss:
+    //     return 0;
+    //   default:
+    //     return 1000;
+    // }
+    return 60;
   }
 
   win() {
@@ -1313,7 +1499,7 @@ class PhoneInBedMinigame {
           this.x - this.width / 2,
           this.y - this.height / 2,
           this.width,
-          this.height,
+          this.height
         );
         break;
     }
@@ -1370,7 +1556,7 @@ class GrabbableThing {
       this.x - this.w / 2,
       this.y - this.h / 2,
       this.w,
-      this.h,
+      this.h
     );
   }
 
@@ -1405,7 +1591,7 @@ class CleanUpMinigame extends Minigame {
         200,
         load("assets/trash bin.gif"),
         1,
-        1,
+        1
       ),
       new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
@@ -1424,7 +1610,7 @@ class CleanUpMinigame extends Minigame {
         type.h,
         type.img,
         type.bin,
-        z,
+        z
       );
 
       this.things.push(thing);
@@ -1525,7 +1711,7 @@ class MazeMinigame extends Minigame {
       326,
       32,
       32,
-      load("assets/PATTY_ICON.png"),
+      load("assets/PATTY_ICON.png")
     );
 
     this.creatures = [
@@ -1556,7 +1742,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2 - 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h,
+          this.patty.h
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1572,7 +1758,7 @@ class MazeMinigame extends Minigame {
           this.patty.x + this.patty.w / 2 + 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h,
+          this.patty.h
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1588,7 +1774,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y + this.patty.h / 2 + 1,
           this.patty.w,
-          1,
+          1
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1603,7 +1789,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y - this.patty.h / 2 - 1,
           this.patty.w,
-          1,
+          1
         );
 
         if (!dt.data.every((x) => x === 255)) {
