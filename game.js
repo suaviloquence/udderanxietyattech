@@ -22,17 +22,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   await run(new IntroMinigame(), ctx, inp, 1);
 
   let dimness = 0.5;
-  run(new BossFight(), ctx, inp, dimness);
-  // let boss;
-  // do {
-  //   boss = new BossFight();
-  //   dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
-  //   dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
-  //   dimness = await run(new CookingMinigame(), ctx, inp, dimness);
-  //   dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
-  //   dimness = await run(new MazeMinigame(), ctx, inp, dimness);
-  //   dimness = await run(boss, ctx, inp, dimness);
-  // } while (!boss.win());
+  // run(new BossFight(), ctx, inp, dimness);
+  let boss;
+  // let end = new Image();
+  do {
+    boss = new BossFight();
+    dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+    dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+    dimness = await run(new CookingMinigame(), ctx, inp, dimness);
+    dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+    dimness = await run(new MazeMinigame(), ctx, inp, dimness);
+    dimness = await run(boss, ctx, inp, dimness);
+  } while (!boss.win());
 
   // dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
@@ -224,6 +225,7 @@ class LerpManager {
  * @param {InputManager} inp
  */
 async function run(game, ctx, inp, dimness) {
+  console.log(dimness);
   const timer = document.getElementById("timer");
   const prompt = document.getElementById("prompt");
 
@@ -534,28 +536,37 @@ class DressUpMinigame extends Minigame {
     // yipepee yipeee yipee
     if (this.hat_state == DressUpMinigame.Outfit.CUTE) {
       this.hat.src = this.hat_cute;
+      console.log("we are doin things");
     } else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
       this.hat.src = this.hat_good;
+      console.log("we are doin things");
     } else {
       this.hat.src = this.hat_depressed;
+      console.log("we are doing things");
     }
 
     // yipepee yipeee yipee
     if (this.top_state == DressUpMinigame.Outfit.CUTE) {
       this.top.src = this.top_cute;
+      console.log("we are doin things");
     } else if (this.top_state == DressUpMinigame.Outfit.GOOD) {
       this.top.src = this.top_good;
+      console.log("we are doin things");
     } else {
       this.top.src = this.top_depressed;
+      console.log("we are doing things");
     }
 
     // yipepee yipeee yipee
     if (this.bottom_state == DressUpMinigame.Outfit.CUTE) {
       this.bottom.src = this.bottom_cute;
+      console.log("we are doin things");
     } else if (this.bottom_state == DressUpMinigame.Outfit.GOOD) {
       this.bottom.src = this.bottom_good;
+      console.log("we are doin things");
     } else {
       this.bottom.src = this.bottom_depressed;
+      console.log("we are doing things");
     }
 
     ctx.drawImage(
@@ -590,6 +601,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_haty &&
       inp.mouseY <= this.right_arrow_haty + 100
     ) {
+      console.log("mouse pressed: right arrow hat");
+
       //use state machine to figure out which hat to do
       if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.hat_state = DressUpMinigame.Outfit.GOOD;
@@ -608,6 +621,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_haty &&
       inp.mouseY <= this.left_arrow_haty + 100
     ) {
+      console.log("mouse pressed: left arrow hat");
+
       //use state machine to figure out which hat to do
       if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.hat_state = DressUpMinigame.Outfit.CUTE;
@@ -626,6 +641,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_topy &&
       inp.mouseY <= this.right_arrow_topy + 100
     ) {
+      console.log("mouse pressed: right arrow top");
+
       //use state machine to figure out which hat to do
       if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.top_state = DressUpMinigame.Outfit.GOOD;
@@ -644,6 +661,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_topy &&
       inp.mouseY <= this.left_arrow_topy + 100
     ) {
+      console.log("mouse pressed: left arrow top");
+
       //use state machine to figure out which hat to do
       if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.top_state = DressUpMinigame.Outfit.CUTE;
@@ -662,6 +681,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_bottomy &&
       inp.mouseY <= this.right_arrow_bottomy + 100
     ) {
+      console.log("mouse pressed: right arrow bottom");
+
       //use state machine to figure out which hat to do
       if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.bottom_state = DressUpMinigame.Outfit.GOOD;
@@ -680,6 +701,8 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_bottomy &&
       inp.mouseY <= this.left_arrow_bottomy + 100
     ) {
+      console.log("mouse pressed: left arrow bottom");
+
       //use state machine to figure out which hat to do
       if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.bottom_state = DressUpMinigame.Outfit.CUTE;
@@ -742,8 +765,6 @@ class CookingMinigame extends Minigame {
       }
     }
 
-    this.bg = load("assets/cooking_back.png");
-
     this.nextRound();
 
     this.bkg = new Image();
@@ -778,15 +799,8 @@ class CookingMinigame extends Minigame {
     }
   }
 
-  /**
-   *
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {number} i
-   * @param {LerpManager} mgr
-   * @param {InputManager} inp
-   */
   loop(ctx, i, mgr, inp) {
-    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
+    ctx.drawImage(this.bkg, 0, 0);
     // Clear the canvas before redrawing
     ctx.fillStyle = "#5b2f0b";
     ctx.fillRect(170, 170, 340, 340);
@@ -842,7 +856,9 @@ class CookingMinigame extends Minigame {
             if (this.userInput.length === this.sequence.length) {
               if (this.userInput.join() === this.sequence.join()) {
                 console.log("Correct sequence!");
-                mgr.timeout(() => this.nextRound(), FPS);
+                setTimeout(() => {
+                  this.nextRound();
+                }, 600);
               } else {
                 console.log("Incorrect sequence!");
                 this.resetGame();
@@ -858,7 +874,9 @@ class CookingMinigame extends Minigame {
   drawTiles(ctx) {
     // Draw all tiles in the grid (always visible)
     for (let tile of this.tiles) {
-      ctx.strokeStyle = "#000";
+      ctx.fillStyle = "#cb7539";
+      ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
+      ctx.strokeStyle = "#df8235";
       ctx.strokeRect(tile.x, tile.y, this.tileSize, this.tileSize);
     }
   }
@@ -994,6 +1012,12 @@ class BossFight extends Minigame {
     // MASH
     this.mashes = 0;
 
+    // ENDS
+    this.end = new Image();
+    this.sad_end = "assets/CAFE_end_SAD.png";
+    this.good_end = "assets/CAFE_end.png";
+    this.end.src = this.sad_end;
+
     // PATTERN
     this.arrows = [
       {
@@ -1089,12 +1113,29 @@ class BossFight extends Minigame {
     }
   }
 
-  resetGame() {
+  resetGame(ctx, mgr) {
     // Reset the game for a new round
     console.log("Game Over! Resetting...");
     this.arrow_sequence = [];
-    this.userInput = [];
-    this.acceptingInput = false;
+    if (this.userInput.length === 7) {
+      this.health -= 180;
+      // health bar?
+      ctx.fillStyle = "black";
+      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+      ctx.fillStyle = "red";
+      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+    } else {
+      // want to end this sequence and go to endings
+      if (this.health <= 0) {
+        mgr.timeout(() => {
+          this.game_state = BossFight.Game_state.win;
+        });
+      } else {
+        mgr.timeout(() => {
+          this.game_state = BossFight.Game_state.lose;
+        });
+      }
+    }
     // this.nextRound();
   }
 
@@ -1110,6 +1151,7 @@ class BossFight extends Minigame {
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     // OUR CHARACTERS
+    ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
 
@@ -1143,7 +1185,7 @@ class BossFight extends Minigame {
               }
             }, 5 * FPS);
           }, FPS);
-          this.game_state = this.game_state.idle;
+          // this.game_state = this.game_state.idle;
         }
 
         //if no button is clicked, ready is false
@@ -1340,14 +1382,14 @@ class BossFight extends Minigame {
                   if (this.userInput.join() === this.arrow_sequence.join()) {
                     console.log("Correct sequence!");
                     if (this.userInput.length === 7) {
-                      this.resetGame();
+                      this.resetGame(ctx, mgr);
                     }
                     setTimeout(() => {
                       this.nextPatternRound();
                     }, 600);
                   } else {
                     console.log("Incorrect sequence!");
-                    this.resetGame();
+                    this.resetGame(ctx, mgr);
                   }
                 }
                 break;
@@ -1356,6 +1398,17 @@ class BossFight extends Minigame {
           }
         }
         break;
+      case BossFight.Game_state.win:
+        this.end.src = this.good_end;
+        ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
+        return;
+      //whatever you have to do here
+      case BossFight.Game_state.lose:
+        //whatever you have to do here
+        this.end.src = this.sad_end;
+        ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
+        return;
+
       case BossFight.Game_state.idle:
       default:
         // health bar?
@@ -1379,6 +1432,8 @@ class BossFight extends Minigame {
   prompt() {
     if (this.game_state == BossFight.Game_state.default) {
       return this.prompt_text;
+    } else if (this.game_state == BossFight.Game_state.pattern) {
+      return "Memorize the arrow pattern, then input them using the arrow keys.";
     } else {
       return "";
     }
@@ -1395,11 +1450,30 @@ class BossFight extends Minigame {
     //   default:
     //     return 1000;
     // }
-    return 60;
+    return 30;
   }
 
   win() {
+    console.log(this.game_state == BossFight.Game_state.win);
     return this.game_state == BossFight.Game_state.win;
+  }
+}
+
+class endings extends Minigame {
+  setup(ctx) {
+    // ENDS
+    this.end = new Image();
+    this.sad_end = "assets/CAFE_end_SAD.png";
+    this.good_end = "assets/CAFE_end.png";
+    this.end.src = this.sad_end;
+  }
+
+  loop(ctx, i, mgr, inp) {
+    if (dimness > 90) {
+      this.end.src = this.good_end;
+    } else {
+      this.end.src = this.sad_end;
+    }
   }
 }
 
@@ -1409,8 +1483,8 @@ class PhoneInBedMinigame {
     this.y = (HEIGHT * 3) / 4;
     this.vx = 0;
     this.vy = 0;
-    this.width = 350;
-    this.height = 350;
+    this.width = 256;
+    this.height = 256;
     this.phone = load("assets/PHONE.png");
     this.patty = load("assets/PATTY_BED.png");
   }
@@ -1420,7 +1494,6 @@ class PhoneInBedMinigame {
    */
   setup(ctx) {
     this.state = 4;
-    this.bg = load("assets/wake_up.png");
   }
 
   /**
@@ -1428,7 +1501,7 @@ class PhoneInBedMinigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
-    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
+    console.dir(this.state);
     switch (this.state) {
       case 4:
         mgr.timeout(() => {
@@ -1567,9 +1640,17 @@ class CleanUpMinigame extends Minigame {
     ];
 
     this.bins = [
-      new GrabbableThing(100, 500, 200, 200, load("assets/DISHBIN.png"), 0, 0),
-      new GrabbableThing(300, 500, 200, 200, load("assets/TRASH.png"), 1, 1),
-      new GrabbableThing(500, 500, 200, 200, load("assets/HAMPER.png"), 2, 2),
+      new GrabbableThing(100, 500, 200, 150, load("assets/dish bin.jpg"), 0, 0),
+      new GrabbableThing(
+        300,
+        500,
+        150,
+        200,
+        load("assets/trash bin.gif"),
+        1,
+        1
+      ),
+      new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
 
     /**
@@ -1596,8 +1677,6 @@ class CleanUpMinigame extends Minigame {
      * @type {number | null}
      */
     this.grabbed = null;
-
-    this.bg = load("assets/cleanup_back.png");
   }
 
   /**
@@ -1607,7 +1686,6 @@ class CleanUpMinigame extends Minigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
-    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
     if (inp.isMouseDown(MOUSE_LEFT)) {
       this.grabbed = null;
       for (const i in this.things) {
