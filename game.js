@@ -22,13 +22,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   await run(new IntroMinigame(), ctx, inp, 1);
 
   let dimness = 0.5;
-  // run(new BossFight(), ctx, inp, dimness);
   let boss;
-  // let end = new Image();
+  let end = new Image();
   do {
     boss = new BossFight();
-    dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
-    dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+    dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness); // dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
     dimness = await run(new CookingMinigame(), ctx, inp, dimness);
     dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
     dimness = await run(new MazeMinigame(), ctx, inp, dimness);
@@ -69,19 +67,19 @@ class InputManager {
     this.queue = [];
 
     canvas.addEventListener("keydown", (evt) =>
-      this.queue.push(() => this.onKeyDown(evt))
+      this.queue.push(() => this.onKeyDown(evt)),
     );
     canvas.addEventListener("keyup", (evt) =>
-      this.queue.push(() => this.onKeyUp(evt))
+      this.queue.push(() => this.onKeyUp(evt)),
     );
     canvas.addEventListener("mousedown", (evt) =>
-      this.queue.push(() => this.onMouseDown(evt))
+      this.queue.push(() => this.onMouseDown(evt)),
     );
     canvas.addEventListener("mouseup", (evt) =>
-      this.queue.push(() => this.onMouseUp(evt))
+      this.queue.push(() => this.onMouseUp(evt)),
     );
     canvas.addEventListener("mousemove", (evt) =>
-      this.queue.push(() => this.onMouseMove(evt))
+      this.queue.push(() => this.onMouseMove(evt)),
     );
   }
 
@@ -476,7 +474,7 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(
       this.confirm,
       CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2
+      CENTER_Y + 100 + CENTER_Y / 2,
     ),
       WIDTH / 2,
       HEIGHT / 2;
@@ -487,14 +485,14 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - 50 - HEIGHT / 2.2,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.right_arrow_hat,
       this.right_arrow_hatx,
       this.right_arrow_haty,
       100,
-      100
+      100,
     );
 
     ctx.drawImage(
@@ -502,35 +500,35 @@ class DressUpMinigame extends Minigame {
       this.right_arrow_topx,
       this.right_arrow_topy,
       this.right_arrow_top.width,
-      this.right_arrow_top.height
+      this.right_arrow_top.height,
     );
     ctx.drawImage(
       this.right_arrow_bottom,
       this.right_arrow_bottomx,
       this.right_arrow_bottomy,
       this.right_arrow_bottom.width,
-      this.right_arrow_bottom.height
+      this.right_arrow_bottom.height,
     );
     ctx.drawImage(
       this.left_arrow_hat,
       this.left_arrow_hatx,
       this.left_arrow_haty,
       this.left_arrow_hat.width,
-      this.left_arrow_hat.height
+      this.left_arrow_hat.height,
     );
     ctx.drawImage(
       this.left_arrow_top,
       this.left_arrow_topx,
       this.left_arrow_topy,
       this.left_arrow_top.width,
-      this.left_arrow_top.height
+      this.left_arrow_top.height,
     );
     ctx.drawImage(
       this.left_arrow_bottom,
       this.left_arrow_bottomx,
       this.left_arrow_bottomy,
       this.left_arrow_bottom.width,
-      this.left_arrow_bottom.height
+      this.left_arrow_bottom.height,
     );
 
     // yipepee yipeee yipee
@@ -574,21 +572,21 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.top,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.bottom,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
 
     // CONTROL LOGIC FOR the arrow stuff
@@ -856,9 +854,13 @@ class CookingMinigame extends Minigame {
             if (this.userInput.length === this.sequence.length) {
               if (this.userInput.join() === this.sequence.join()) {
                 console.log("Correct sequence!");
-                setTimeout(() => {
-                  this.nextRound();
-                }, 600);
+                if (!this.waiting) {
+                  setTimeout(() => {
+                    this.nextRound();
+                    this.waiting = false;
+                  }, 600);
+                  this.waiting = true;
+                }
               } else {
                 console.log("Incorrect sequence!");
                 this.resetGame();
@@ -1017,10 +1019,8 @@ class BossFight extends Minigame {
     this.mashes = 0;
 
     // ENDS
-    this.end = new Image();
-    this.sad_end = "assets/CAFE_end_SAD.png";
-    this.good_end = "assets/CAFE_end.png";
-    this.end.src = this.sad_end;
+    this.sad_end = load("assets/CAFE_end_SAD.png");
+    this.good_end = load("assets/CAFE_end.png");
 
     // PATTERN
     this.arrows = [
@@ -1090,7 +1090,7 @@ class BossFight extends Minigame {
       const r = Math.random() * 255;
       const g = Math.random() * 255;
       const b = Math.random() * 255;
-      this.currentColor = `rgb(${r}, ${g}, ${b})`;
+      this.currentColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
       this.flashStep++;
       this.lastFlashTime = performance.now();
     } else {
@@ -1111,7 +1111,6 @@ class BossFight extends Minigame {
     // Draw the tile that's currently flashing
     if (this.currentFlash !== -1) {
       const arrow = this.arrows[this.currentFlash];
-      ctx.globalAlpha = 0.5;
       ctx.fillStyle = color; // Highlight the flashing tile with red
       ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
     }
@@ -1129,15 +1128,15 @@ class BossFight extends Minigame {
       ctx.fillStyle = "red";
       ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
     }
+    this.game_state = BossFight.Game_state.idle;
     // want to end this sequence and go to endings
     if (this.health <= 0) {
+      this.barista = this.normalBarista;
       mgr.timeout(() => {
         this.game_state = BossFight.Game_state.win;
-      });
+      }, FPS);
     } else {
-      mgr.timeout(() => {
-        this.game_state = BossFight.Game_state.lose;
-      });
+      this.game_state = BossFight.Game_state.loss;
     }
 
     // this.nextRound();
@@ -1158,7 +1157,7 @@ class BossFight extends Minigame {
     ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
-    console.log("still in the loop");
+    console.log("still in the loop", this.game_state);
 
     switch (this.game_state) {
       case BossFight.Game_state.default:
@@ -1190,7 +1189,7 @@ class BossFight extends Minigame {
               }
             }, 5 * FPS);
           }, FPS);
-          // this.game_state = this.game_state.idle;
+          this.game_state = this.game_state.idle;
         }
 
         //if no button is clicked, ready is false
@@ -1259,7 +1258,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2
+          HEIGHT / 2,
         );
 
         if (this.mashes >= 100 / 5) {
@@ -1278,14 +1277,14 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2
+          HEIGHT / 2,
         );
         break;
       case BossFight.Game_state.mash_success:
         this.health -= 180;
         mgr.timeout(() => {
           this.game_state = BossFight.Game_state.pattern;
-        });
+        }, FPS);
         // health bar?
         ctx.fillStyle = "black";
         ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
@@ -1298,14 +1297,14 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2
+          HEIGHT / 2,
         );
 
         if (this.cancel) {
           this.cancel();
         }
         this.cancel = null;
-        this.game_state = BossFight.Game_state.pattern;
+        this.game_state = BossFight.Game_state.idle;
         break;
       case BossFight.Game_state.mash_fail:
         this.barista = this.evilBarista;
@@ -1321,7 +1320,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2
+          HEIGHT / 2,
         );
 
         this.cancel = null;
@@ -1350,7 +1349,6 @@ class BossFight extends Minigame {
         if (this.userFlashIndex !== -1) {
           if (currentTime - this.userFlashTime <= this.userFlashInterval) {
             const arrow = this.arrows[this.userFlashIndex];
-            ctx.globalAlpha = 0.5;
             ctx.fillStyle = "#0000FF";
             ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
           } else {
@@ -1383,8 +1381,7 @@ class BossFight extends Minigame {
                 if (this.userInput.length === this.arrow_sequence.length) {
                   if (this.userInput.join() === this.arrow_sequence.join()) {
                     console.log("Correct sequence!");
-                    ctx.globalAlpha = 1.0;
-                    if (this.userInput.length === 7) {
+                    if (this.userInput.length === 5) {
                       this.resetGame(ctx, mgr);
                     }
                     setTimeout(() => {
@@ -1402,14 +1399,11 @@ class BossFight extends Minigame {
         }
         break;
       case BossFight.Game_state.win:
-        this.end.src = this.good_end;
-        ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(this.good_end, 0, 0, WIDTH, HEIGHT);
         return;
       //whatever you have to do here
       case BossFight.Game_state.loss:
-        //whatever you have to do here
-        this.end.src = this.sad_end;
-        ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(this.sad_end, 0, 0, WIDTH, HEIGHT);
         return;
 
       case BossFight.Game_state.idle:
@@ -1426,7 +1420,7 @@ class BossFight extends Minigame {
           WIDTH / 2,
           HEIGHT / 4,
           WIDTH / 2,
-          HEIGHT / 2
+          HEIGHT / 2,
         );
         break;
     }
@@ -1436,11 +1430,11 @@ class BossFight extends Minigame {
     if (this.game_state == BossFight.Game_state.default) {
       return this.prompt_text;
     } else if (this.game_state == BossFight.Game_state.mash) {
-      return "Mash [KEY] as fast as possible to build up your gauge. The higher your gauge the better.";
+      return "Mash [LEFT] and [RIGHT] as fast as possible to build up your gauge. The higher your gauge the better.";
     } else if (this.game_state == BossFight.Game_state.pattern) {
       return "Memorize the arrow pattern, then click on the arrows to match.";
     } else if (this.game_state == BossFight.Game_state.loss) {
-      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW. Maybe I'll try again another day...";
+      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of here NOW. Maybe I'll try again another day...";
     } else if (this.game_state == BossFight.Game_state.win) {
       return "Ok, got my coffee. Actually, I'm feeling really great about that! She wasn't even scary to talk to. I really feel my mood getting better!";
     } else {
@@ -1583,7 +1577,7 @@ class PhoneInBedMinigame {
           this.x - this.width / 2,
           this.y - this.height / 2,
           this.width,
-          this.height
+          this.height,
         );
         break;
     }
@@ -1640,7 +1634,7 @@ class GrabbableThing {
       this.x - this.w / 2,
       this.y - this.h / 2,
       this.w,
-      this.h
+      this.h,
     );
   }
 
@@ -1686,7 +1680,7 @@ class CleanUpMinigame extends Minigame {
         type.h,
         type.img,
         type.bin,
-        z
+        z,
       );
 
       this.things.push(thing);
@@ -1791,7 +1785,7 @@ class MazeMinigame extends Minigame {
       326,
       32,
       32,
-      load("assets/PATTY_ICON.png")
+      load("assets/PATTY_ICON.png"),
     );
 
     this.creatures = [
@@ -1822,7 +1816,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2 - 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h
+          this.patty.h,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1838,7 +1832,7 @@ class MazeMinigame extends Minigame {
           this.patty.x + this.patty.w / 2 + 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h
+          this.patty.h,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1854,7 +1848,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y + this.patty.h / 2 + 1,
           this.patty.w,
-          1
+          1,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1869,7 +1863,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y - this.patty.h / 2 - 1,
           this.patty.w,
-          1
+          1,
         );
 
         if (!dt.data.every((x) => x === 255)) {
