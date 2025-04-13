@@ -1204,9 +1204,6 @@ class BossFight extends Minigame {
           ready = false;
           this.barista = this.evilBarista;
           this.game_state = BossFight.Game_state.loss;
-          mgr.timeout(() => {
-            this.game_state = BossFight.Game_state.loss;
-          }, FPS);
         }
 
         // if yes clicked, want to advance
@@ -1443,11 +1440,11 @@ class BossFight extends Minigame {
     } else if (this.game_state == BossFight.Game_state.pattern) {
       return "Memorize the arrow pattern, then click on the arrows to match.";
     } else if (this.game_state == BossFight.Game_state.loss) {
-      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW.";
+      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW. Maybe I'll try again another day...";
     } else if (this.game_state == BossFight.Game_state.win) {
-      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW.";
+      return "Ok, got my coffee. Actually, I'm feeling really great about that! She wasn't even scary to talk to. I really feel my mood getting better!";
     } else {
-      return "Ok, got my coffee. Actually, I'm feeling really great about that! She wasn't even scary to talk to.";
+      return "";
     }
   }
 
