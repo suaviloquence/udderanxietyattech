@@ -334,8 +334,7 @@ class DressUpMinigame extends Minigame {
 
     // patty TODO: CHANGE TO ACTUAL PHOTO
     this.patty = new Image();
-    this.patty.src =
-      "https://img.freepik.com/free-vector/cute-cartoon-cow-illustration_1308-176774.jpg";
+    this.patty.src = "assets/dressup/PATTY_DRESS.png";
 
     // arrows
     this.right_arrow_hat = new Image();
@@ -344,7 +343,7 @@ class DressUpMinigame extends Minigame {
     this.right_arrow_hat.width = 100;
     this.right_arrow_hat.height = 100;
     this.right_arrow_hatx = CENTER_X + 250 - this.right_arrow_hat.width / 2;
-    this.right_arrow_haty = CENTER_Y - 200 - this.right_arrow_hat.height / 2;
+    this.right_arrow_haty = CENTER_Y - 250 - this.right_arrow_hat.height / 2;
 
     this.right_arrow_top = new Image();
     this.right_arrow_top.src =
@@ -352,7 +351,7 @@ class DressUpMinigame extends Minigame {
     this.right_arrow_top.width = 100;
     this.right_arrow_top.height = 100;
     this.right_arrow_topx = CENTER_X + 250 - this.right_arrow_top.width / 2;
-    this.right_arrow_topy = CENTER_Y - 50 - this.right_arrow_top.height / 2;
+    this.right_arrow_topy = CENTER_Y - this.right_arrow_top.height / 2;
 
     this.right_arrow_bottom = new Image();
     this.right_arrow_bottom.src =
@@ -362,7 +361,7 @@ class DressUpMinigame extends Minigame {
     this.right_arrow_bottomx =
       CENTER_X + 250 - this.right_arrow_bottom.width / 2;
     this.right_arrow_bottomy =
-      CENTER_Y + 100 - this.right_arrow_bottom.height / 2;
+      CENTER_Y + 150 - this.right_arrow_bottom.height / 2;
 
     // for these arrows, flip the other ones... maybe do it after downloading instead of how they're being hosted rn
     this.left_arrow_hat = new Image();
@@ -370,14 +369,14 @@ class DressUpMinigame extends Minigame {
     this.left_arrow_hat.width = 100;
     this.left_arrow_hat.height = 100;
     this.left_arrow_hatx = CENTER_X - 250 - this.left_arrow_hat.width / 2;
-    this.left_arrow_haty = CENTER_Y - 200 - this.left_arrow_hat.height / 2;
+    this.left_arrow_haty = CENTER_Y - 250 - this.left_arrow_hat.height / 2;
 
     this.left_arrow_top = new Image();
     this.left_arrow_top.src = "https://dinopixel.com/preload/0324/arrow.png";
     this.left_arrow_top.width = 100;
     this.left_arrow_top.height = 100;
     this.left_arrow_topx = CENTER_X - 250 - this.left_arrow_top.width / 2;
-    this.left_arrow_topy = CENTER_Y - 50 - this.left_arrow_top.height / 2;
+    this.left_arrow_topy = CENTER_Y - this.left_arrow_top.height / 2;
 
     this.left_arrow_bottom = new Image();
     this.left_arrow_bottom.src = "https://dinopixel.com/preload/0324/arrow.png";
@@ -385,7 +384,7 @@ class DressUpMinigame extends Minigame {
     this.left_arrow_bottom.height = 100;
     this.left_arrow_bottomx = CENTER_X - 250 - this.left_arrow_bottom.width / 2;
     this.left_arrow_bottomy =
-      CENTER_Y + 100 - this.left_arrow_bottom.height / 2;
+      CENTER_Y + 150 - this.left_arrow_bottom.height / 2;
 
     // state machine for each thing
     this.hat_state = DressUpMinigame.Outfit.DEPRESSED;
@@ -396,24 +395,21 @@ class DressUpMinigame extends Minigame {
     this.hat = new Image();
     this.hat_depressed =
       "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
-    this.hat_cute =
-      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.hat_cute = "assets/dressup/HAT_C.png";
     this.hat_good =
       "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
 
     this.top = new Image();
     this.top_depressed =
       "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
-    this.top_cute =
-      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.top_cute = "assets/dressup/TOP_C.png";
     this.top_good =
       "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
 
     this.bottom = new Image();
     this.bottom_depressed =
       "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
-    this.bottom_cute =
-      "https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-straw-hat-cartoon-illustration-png-image_6562738.png";
+    this.bottom_cute = "assets/dressup/BOTTOM_C.png";
     this.bottom_good =
       "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
   }
@@ -440,10 +436,10 @@ class DressUpMinigame extends Minigame {
     // the constant images
     ctx.drawImage(
       this.patty,
-      CENTER_X - WIDTH / 4,
-      CENTER_Y - HEIGHT / 3,
-      WIDTH / 2,
-      HEIGHT / 1.5
+      CENTER_X - WIDTH / 2.2,
+      CENTER_Y - 50 - HEIGHT / 2.2,
+      WIDTH / 1.1,
+      HEIGHT / 1.1
     );
     ctx.drawImage(
       this.right_arrow_hat,
@@ -525,14 +521,26 @@ class DressUpMinigame extends Minigame {
       console.log("we are doing things");
     }
 
-    ctx.drawImage(this.hat, CENTER_X - 50, this.right_arrow_haty, 100, 100);
-    ctx.drawImage(this.top, CENTER_X - 50, this.right_arrow_topy, 100, 100);
+    ctx.drawImage(
+      this.hat,
+      CENTER_X - WIDTH / 2.2,
+      CENTER_Y - HEIGHT / 2.2 - 50,
+      WIDTH / 1.1,
+      HEIGHT / 1.1
+    );
+    ctx.drawImage(
+      this.top,
+      CENTER_X - WIDTH / 2.2,
+      CENTER_Y - HEIGHT / 2.2 - 50,
+      WIDTH / 1.1,
+      HEIGHT / 1.1
+    );
     ctx.drawImage(
       this.bottom,
-      CENTER_X - 50,
-      this.right_arrow_bottomy,
-      100,
-      100
+      CENTER_X - WIDTH / 2.2,
+      CENTER_Y - HEIGHT / 2.2 - 50,
+      WIDTH / 1.1,
+      HEIGHT / 1.1
     );
 
     // CONTROL LOGIC FOR the arrow stuff
