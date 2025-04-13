@@ -47,6 +47,7 @@ class InputManager {
     this.offsetX = canvas.offsetLeft;
     this.offsetY = canvas.offsetTop;
 
+
     /**
      * @type {(() => ())[]}
      */
@@ -559,3 +560,4 @@ class CleanUpMinigame extends Minigame {
     return 10;
   }
 }
+
