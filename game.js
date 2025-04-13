@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     dimness = await run(boss, ctx, inp, dimness);
   } while (!boss.win());
 
-  // dimness = await run(new MeowMinigame(), ctx, inp, dimness);
+  dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
 class InputManager {
@@ -991,7 +991,8 @@ class BossFight extends Minigame {
 
     this.before_cafe = new Image();
     this.before_cafe.src = "assets/CAFE_before_enter.png";
-
+    this.bg = new Image();
+    this.bg.src = "assets/phone_back.png";
     // arrows
     this.arrow_down = load("assets/dressup/ARROW_D.png");
     this.arrow_up = load("assets/dressup/ARROW_U.png");
@@ -1163,7 +1164,7 @@ class BossFight extends Minigame {
       case BossFight.Game_state.default:
         // this is the continuous prompting thing
         let ready = true;
-        ctx.drawImage(this.before_cafe, 0, 0, WIDTH / 2, HEIGHT / 2);
+        ctx.drawImage(this.before_cafe, 0, 0, WIDTH, HEIGHT);
 
         if (this.prompt_text == BossFight.are_you_sure.default) {
           setTimeout(() => {
@@ -1202,7 +1203,7 @@ class BossFight extends Minigame {
         ) {
           ready = false;
           this.barista = this.evilBarista;
-          this.game_state = BossFight.Game_state.idle;
+          this.game_state = BossFight.Game_state.loss;
           mgr.timeout(() => {
             this.game_state = BossFight.Game_state.loss;
           }, FPS);
@@ -1385,6 +1386,7 @@ class BossFight extends Minigame {
                 if (this.userInput.length === this.arrow_sequence.length) {
                   if (this.userInput.join() === this.arrow_sequence.join()) {
                     console.log("Correct sequence!");
+                    ctx.globalAlpha = 1.0;
                     if (this.userInput.length === 7) {
                       this.resetGame(ctx, mgr);
                     }
@@ -1407,7 +1409,7 @@ class BossFight extends Minigame {
         ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
         return;
       //whatever you have to do here
-      case BossFight.Game_state.lose:
+      case BossFight.Game_state.loss:
         //whatever you have to do here
         this.end.src = this.sad_end;
         ctx.drawImage(this.end, 0, 0, WIDTH, HEIGHT);
@@ -1436,10 +1438,16 @@ class BossFight extends Minigame {
   prompt() {
     if (this.game_state == BossFight.Game_state.default) {
       return this.prompt_text;
+    } else if (this.game_state == BossFight.Game_state.mash) {
+      return "Mash [KEY] as fast as possible to build up your gauge. The higher your gauge the better.";
     } else if (this.game_state == BossFight.Game_state.pattern) {
-      return "Memorize the arrow pattern, then input them using the arrow keys.";
+      return "Memorize the arrow pattern, then click on the arrows to match.";
+    } else if (this.game_state == BossFight.Game_state.loss) {
+      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW.";
+    } else if (this.game_state == BossFight.Game_state.win) {
+      return "I'm never living that down. I don't care that the coffee is hot, I'm chugging it and getting out of her NOW.";
     } else {
-      return "";
+      return "Ok, got my coffee. Actually, I'm feeling really great about that! She wasn't even scary to talk to.";
     }
   }
 
@@ -1454,6 +1462,14 @@ class BossFight extends Minigame {
     //   default:
     //     return 1000;
     // }
+    switch (this.game_state) {
+      case BossFight.Game_state.win:
+        return 10;
+      case BossFight.Game_state.loss:
+        return 10;
+      default:
+        return 50;
+    }
     return 50;
   }
 
@@ -1506,6 +1522,7 @@ class PhoneInBedMinigame {
    */
   setup(ctx) {
     this.state = 4;
+    this.bg = load("assets/wake_up.png");
   }
 
   /**
@@ -1513,6 +1530,7 @@ class PhoneInBedMinigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
     console.dir(this.state);
     switch (this.state) {
       case 4:
@@ -1681,6 +1699,8 @@ class CleanUpMinigame extends Minigame {
      * @type {number | null}
      */
     this.grabbed = null;
+
+    this.bg = load("assets/cleanup_back.png");
   }
 
   /**
@@ -1690,6 +1710,8 @@ class CleanUpMinigame extends Minigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
+
     if (inp.isMouseDown(MOUSE_LEFT)) {
       this.grabbed = null;
       for (const i in this.things) {
