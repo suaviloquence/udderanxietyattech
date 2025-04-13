@@ -9,6 +9,8 @@ const MOUSE_RIGHT = 2;
 
 const ARROW_LEFT = "ArrowLeft";
 const ARROW_RIGHT = "ArrowRight";
+const ARROW_DOWN = "ArrowDown";
+const ARROW_UP = "ArrowUp";
 
 document.addEventListener("DOMContentLoaded", async () => {
   /** @type HTMLCanvasElement */
@@ -17,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
 
+  await run(new MazeMinigame(), ctx, inp);
   await run(new CleanUpMinigame(), ctx, inp);
   await run(new PhoneInBedMinigame(), ctx, inp);
   await run(new MeowMinigame(), ctx, inp);
@@ -557,5 +560,138 @@ class CleanUpMinigame extends Minigame {
    */
   time() {
     return 10;
+  }
+}
+
+class MazeMinigame extends Minigame {
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  setup(ctx) {
+    this.maze = load("assets/maze3.svg");
+
+    this.patty = new GrabbableThing(
+      316,
+      326,
+      32,
+      32,
+      load("assets/cow face.png"),
+    );
+
+    this.creatures = [
+      new GrabbableThing(606, 397, 32, 32, load("assets/cat face.png")),
+      new GrabbableThing(316, 46, 32, 32, load("assets/crow fac.png")),
+      new GrabbableThing(269, 168, 32, 32, load("assets/penguin.png")),
+    ];
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   * @param {LerpManager} mgr
+   * @param {InputManager} inp
+   */
+  loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.maze, 0, 0, WIDTH, HEIGHT);
+
+    for (const creature of this.creatures) {
+      creature.draw(ctx);
+    }
+
+    const K = 5;
+
+    if (inp.isKeyPressed(ARROW_LEFT)) {
+      for (let i = 0; i < K; i++) {
+        const dt = ctx.getImageData(
+          this.patty.x - this.patty.w / 2 - 1,
+          this.patty.y - this.patty.h / 2,
+          1,
+          this.patty.h,
+        );
+
+        if (!dt.data.every((x) => x === 255)) {
+          break;
+        }
+        this.patty.x--;
+      }
+    }
+
+    if (inp.isKeyPressed(ARROW_RIGHT)) {
+      for (let i = 0; i < K; i++) {
+        const dt = ctx.getImageData(
+          this.patty.x + this.patty.w / 2 + 1,
+          this.patty.y - this.patty.h / 2,
+          1,
+          this.patty.h,
+        );
+
+        if (!dt.data.every((x) => x === 255)) {
+          break;
+        }
+        this.patty.x++;
+      }
+    }
+
+    if (inp.isKeyPressed(ARROW_DOWN)) {
+      for (let i = 0; i < K; i++) {
+        const dt = ctx.getImageData(
+          this.patty.x - this.patty.w / 2,
+          this.patty.y + this.patty.h / 2 + 1,
+          this.patty.w,
+          1,
+        );
+
+        if (!dt.data.every((x) => x === 255)) {
+          break;
+        }
+        this.patty.y++;
+      }
+    }
+    if (inp.isKeyPressed(ARROW_UP)) {
+      for (let i = 0; i < K; i++) {
+        const dt = ctx.getImageData(
+          this.patty.x - this.patty.w / 2,
+          this.patty.y - this.patty.h / 2 - 1,
+          this.patty.w,
+          1,
+        );
+
+        if (!dt.data.every((x) => x === 255)) {
+          break;
+        }
+        this.patty.y--;
+      }
+    }
+
+    this.patty.draw(ctx);
+
+    let remove = null;
+    for (const i in this.creatures) {
+      let yay = false;
+      for (const x of [
+        this.patty.x - this.patty.w / 2,
+        this.patty.x + this.patty.w / 2,
+      ]) {
+        for (const y of [
+          this.patty.y - this.patty.h / 2,
+          this.patty.y + this.patty.h / 2,
+        ]) {
+          if (this.creatures[i].contains(x, y)) {
+            yay = true;
+          }
+        }
+      }
+      if (yay) {
+        remove = i;
+      }
+    }
+    if (remove) this.creatures.splice(remove, 1);
+  }
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    return 15;
   }
 }
