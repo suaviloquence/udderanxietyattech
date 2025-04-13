@@ -19,7 +19,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
   let dimness = 0.5;
-  run(new BossFight(), ctx, inp, dimness);
+  let boss;
+  do {
+    boss = new BossFight();
+    dimness = await run(boss, ctx, inp, dimness);
+  } while (!boss.win());
   // dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
   // dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
   // dimness = await run(new CookingMinigame(), ctx, inp, dimness);
@@ -931,6 +935,9 @@ class BossFight extends Minigame {
     mash_success: 5,
     mash_fail: 6,
     idle: 7,
+
+    win: 100,
+    loss: 101,
   };
 
   static are_you_sure = {
@@ -1050,7 +1057,11 @@ class BossFight extends Minigame {
           inp.mouseY <= this.naur_buttony + 100
         ) {
           ready = false;
-          this.game_state = BossFight.Game_state.end;
+          this.barista = this.evilBarista;
+          this.game_state = BossFight.Game_state.idle;
+          mgr.timeout(() => {
+            this.game_state = BossFight.Game_state.loss;
+          }, FPS);
         }
 
         // if yes clicked, want to advance
@@ -1205,7 +1216,17 @@ class BossFight extends Minigame {
    * @returns {Number}
    */
   time() {
-    return 60;
+    switch (this.game_state) {
+      case BossFight.Game_state.win:
+      case BossFight.Game_state.loss:
+        return 0;
+      default:
+        return 1000;
+    }
+  }
+
+  win() {
+    return this.game_state == BossFight.Game_state.win;
   }
 }
 
