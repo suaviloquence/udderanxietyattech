@@ -989,6 +989,9 @@ class BossFight extends Minigame {
     this.evilBarista = load("assets/EVIL_BARISTA.png");
     this.barista = this.normalBarista;
 
+    this.before_cafe = new Image();
+    this.before_cafe.src = "assets/CAFE_before_enter.png";
+
     // arrows
     this.arrow_down = load("assets/dressup/ARROW_D.png");
     this.arrow_up = load("assets/dressup/ARROW_U.png");
@@ -1117,7 +1120,7 @@ class BossFight extends Minigame {
     // Reset the game for a new round
     console.log("Game Over! Resetting...");
     this.arrow_sequence = [];
-    if (this.userInput.length === 7) {
+    if (this.userInput.length === 5) {
       this.health -= 180;
       // health bar?
       ctx.fillStyle = "black";
@@ -1160,7 +1163,7 @@ class BossFight extends Minigame {
       case BossFight.Game_state.default:
         // this is the continuous prompting thing
         let ready = true;
-        ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+        ctx.drawImage(this.before_cafe, 0, 0, WIDTH / 2, HEIGHT / 2);
 
         if (this.prompt_text == BossFight.are_you_sure.default) {
           setTimeout(() => {
