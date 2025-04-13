@@ -12,7 +12,6 @@ const ARROW_RIGHT = "ArrowRight";
 const ARROW_DOWN = "ArrowDown";
 const ARROW_UP = "ArrowUp";
 
-
 document.addEventListener("DOMContentLoaded", async () => {
   /** @type HTMLCanvasElement */
   const canvas = document.getElementById("game");
@@ -21,9 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   canvas.focus();
   let dimness = 0.5;
 
+  dimness = await run(new BossFight(), ctx, inp);
   dimness = await run(new MazeMinigame(), ctx, inp, dimness);
   dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
   dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+
   dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
   dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
@@ -156,7 +157,7 @@ class InputManager {
 
     this.queue = [];
   }
-  
+
   frameEnd() {
     this.up.clear();
     this.down.clear();
@@ -220,7 +221,7 @@ async function run(game, ctx, inp, dimness) {
   console.log(dimness);
   const timer = document.getElementById("timer");
   const prompt = document.getElementById("prompt");
-  
+
   game.setup(ctx);
   let i = 0;
   let handler = null;
@@ -749,6 +750,9 @@ class CookingMinigame extends Minigame {
     }
 
     this.nextRound();
+
+    this.bkg = new Image();
+    this.bkg.src = "assets/cooking_back.png";
   }
 
   // Start the next round by adding a random tile to the sequence
@@ -780,9 +784,11 @@ class CookingMinigame extends Minigame {
   }
 
   loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.bkg, 0, 0);
     // Clear the canvas before redrawing
-    ctx.fillStyle = "grey";
+    ctx.fillStyle = "#5b2f0b";
     ctx.fillRect(170, 170, 340, 340);
+
     // ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.drawTiles(ctx);
 
@@ -834,7 +840,9 @@ class CookingMinigame extends Minigame {
             if (this.userInput.length === this.sequence.length) {
               if (this.userInput.join() === this.sequence.join()) {
                 console.log("Correct sequence!");
-                this.nextRound();
+                setTimeout(() => {
+                  this.nextRound();
+                }, 600);
               } else {
                 console.log("Incorrect sequence!");
                 this.resetGame();
@@ -850,9 +858,9 @@ class CookingMinigame extends Minigame {
   drawTiles(ctx) {
     // Draw all tiles in the grid (always visible)
     for (let tile of this.tiles) {
-      ctx.fillStyle = "#ddd";
+      ctx.fillStyle = "#cb7539";
       ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
-      ctx.strokeStyle = "#000";
+      ctx.strokeStyle = "#df8235";
       ctx.strokeRect(tile.x, tile.y, this.tileSize, this.tileSize);
     }
   }
@@ -878,6 +886,63 @@ class CookingMinigame extends Minigame {
   // Time to complete this round (e.g., 15 seconds)
   time() {
     return 20;
+  }
+}
+
+class BossFight extends Minigame {
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+
+  static Game_state = {
+    CUTE: 2,
+    GOOD: 1,
+    DEPRESSED: 0,
+  };
+
+  setup(ctx) {
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    this.barista = new Image();
+    this.barista.src =
+      "https://64.media.tumblr.com/51c1f4f6e31e22170c3c70ce1e857410/tumblr_ok8gprvz4h1vl7x77o1_1280.png";
+
+    this.patty = new Image();
+    this.patty.src = "assets/PATTY.png";
+
+    this.health = WIDTH / 2;
+
+    this.game_state = BossFight.Game_state.default;
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   * @param {LerpManager} mgr
+   * @param {InputManager} inp
+   */
+  loop(ctx, i, mgr, inp) {
+    // TODO: BACKGROUND CHANGE
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // OUR CHARACTERS
+    ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+
+    // health bar?
+    ctx.fillStyle = "black";
+    ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+    ctx.fillStyle = "red";
+    ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+  }
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    return 60;
   }
 }
 
@@ -1014,7 +1079,7 @@ class GrabbableThing {
       this.x - this.w / 2,
       this.y - this.h / 2,
       this.w,
-      this.h,
+      this.h
     );
   }
 
@@ -1049,7 +1114,7 @@ class CleanUpMinigame extends Minigame {
         200,
         load("assets/trash bin.gif"),
         1,
-        1,
+        1
       ),
       new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
@@ -1068,7 +1133,7 @@ class CleanUpMinigame extends Minigame {
         type.h,
         type.img,
         type.bin,
-        z,
+        z
       );
 
       this.things.push(thing);
@@ -1146,7 +1211,9 @@ class CleanUpMinigame extends Minigame {
     if (this.win()) {
       return "Decluttering complete!";
     } else {
-      return `Drag and drop ${this.things.length - 4} more item${this.things.length - 4 === 1 ? "" : "s"} to their corresponding place`;
+      return `Drag and drop ${this.things.length - 4} more item${
+        this.things.length - 4 === 1 ? "" : "s"
+      } to their corresponding place`;
     }
   }
 
@@ -1167,7 +1234,7 @@ class MazeMinigame extends Minigame {
       326,
       32,
       32,
-      load("assets/cow face.png"),
+      load("assets/cow face.png")
     );
 
     this.creatures = [
@@ -1198,7 +1265,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2 - 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h,
+          this.patty.h
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1214,7 +1281,7 @@ class MazeMinigame extends Minigame {
           this.patty.x + this.patty.w / 2 + 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h,
+          this.patty.h
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1230,7 +1297,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y + this.patty.h / 2 + 1,
           this.patty.w,
-          1,
+          1
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1245,7 +1312,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y - this.patty.h / 2 - 1,
           this.patty.w,
-          1,
+          1
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1291,108 +1358,14 @@ class MazeMinigame extends Minigame {
     if (this.win()) {
       return "Enjoy the walk with your friends!";
     } else {
-      return `Navigate through the maze and find at least ${this.creatures.length - 1} more frien${this.creatures.length - 1 === 1 ? "d" : "ds"}`;
+      return `Navigate through the maze and find at least ${
+        this.creatures.length - 1
+      } more frien${this.creatures.length - 1 === 1 ? "d" : "ds"}`;
     }
   }
 
   win() {
     return this.creatures.length <= 1;
-  }
-}
-
-class PhoneInBedMinigame {
-  constructor() {
-    this.x = WIDTH / 2;
-    this.y = (HEIGHT * 3) / 4;
-    this.vx = 0;
-    this.vy = 0;
-    this.width = 256;
-    this.height = 256;
-    this.phone = new Image();
-    this.phone.src = "assets/PHONE.png";
-    this.patty = new Image();
-    this.patty.src = "assets/PATTY_BED.png";
-    this.state = 4;
-  }
-
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   */
-  setup(ctx) {}
-
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {Number} i
-   * @param {LerpManager} mgr
-   * @param {InputManager} inp
-   */
-  loop(ctx, i, mgr, inp) {
-    console.dir(this.state);
-    switch (this.state) {
-      case 4:
-        mgr.timeout(() => {
-          this.state--;
-          mgr.timeout(() => {
-            this.state--;
-            mgr.timeout(() => {
-              this.state--;
-            }, FPS);
-          }, FPS);
-        }, FPS);
-        this.state--;
-      case 3:
-      case 2:
-      case 1:
-        const l = this.state.toString();
-        ctx.font = "40px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "black";
-        ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
-        break;
-      case 0:
-        ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
-
-        const C = 1;
-
-        const left = inp.isKeyDown(ARROW_LEFT);
-        const right = inp.isKeyDown(ARROW_RIGHT);
-
-        this.vy -= C;
-
-        const D = 5;
-
-        if (left && !right) {
-          // this.vx -= D;
-          this.vy += D;
-        }
-
-        if (right && !left) {
-          // this.vx += D;
-          this.vy += D;
-        }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        this.x = Math.min(WIDTH, Math.max(0, this.x));
-        this.y = Math.min(HEIGHT, Math.max(0, this.y));
-
-        ctx.drawImage(
-          this.patty,
-          this.x - this.width / 2,
-          this.y - this.height / 2,
-          this.width,
-          this.height,
-        );
-        break;
-    }
-  }
-
-  /**
-   * @returns {Number}
-   */
-  time() {
-    return 10;
   }
 }
 
@@ -1428,7 +1401,7 @@ class GrabbableThing {
       this.x - this.w / 2,
       this.y - this.h / 2,
       this.w,
-      this.h,
+      this.h
     );
   }
 
@@ -1463,7 +1436,7 @@ class CleanUpMinigame extends Minigame {
         200,
         load("assets/trash bin.gif"),
         1,
-        1,
+        1
       ),
       new GrabbableThing(500, 600, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
@@ -1482,7 +1455,7 @@ class CleanUpMinigame extends Minigame {
         type.h,
         type.img,
         type.bin,
-        z,
+        z
       );
 
       this.things.push(thing);
@@ -1553,4 +1526,3 @@ class CleanUpMinigame extends Minigame {
     return 10;
   }
 }
-
