@@ -59,19 +59,19 @@ class InputManager {
     this.queue = [];
 
     canvas.addEventListener("keydown", (evt) =>
-      this.queue.push(() => this.onKeyDown(evt))
+      this.queue.push(() => this.onKeyDown(evt)),
     );
     canvas.addEventListener("keyup", (evt) =>
-      this.queue.push(() => this.onKeyUp(evt))
+      this.queue.push(() => this.onKeyUp(evt)),
     );
     canvas.addEventListener("mousedown", (evt) =>
-      this.queue.push(() => this.onMouseDown(evt))
+      this.queue.push(() => this.onMouseDown(evt)),
     );
     canvas.addEventListener("mouseup", (evt) =>
-      this.queue.push(() => this.onMouseUp(evt))
+      this.queue.push(() => this.onMouseUp(evt)),
     );
     canvas.addEventListener("mousemove", (evt) =>
-      this.queue.push(() => this.onMouseMove(evt))
+      this.queue.push(() => this.onMouseMove(evt)),
     );
   }
 
@@ -206,8 +206,6 @@ class LerpManager {
       },
       left: time,
     });
-
-    console.dir(this.lerps);
   }
 }
 
@@ -468,7 +466,7 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(
       this.confirm,
       CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2
+      CENTER_Y + 100 + CENTER_Y / 2,
     ),
       WIDTH / 2,
       HEIGHT / 2;
@@ -479,14 +477,14 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - 50 - HEIGHT / 2.2,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.right_arrow_hat,
       this.right_arrow_hatx,
       this.right_arrow_haty,
       100,
-      100
+      100,
     );
 
     ctx.drawImage(
@@ -494,35 +492,35 @@ class DressUpMinigame extends Minigame {
       this.right_arrow_topx,
       this.right_arrow_topy,
       this.right_arrow_top.width,
-      this.right_arrow_top.height
+      this.right_arrow_top.height,
     );
     ctx.drawImage(
       this.right_arrow_bottom,
       this.right_arrow_bottomx,
       this.right_arrow_bottomy,
       this.right_arrow_bottom.width,
-      this.right_arrow_bottom.height
+      this.right_arrow_bottom.height,
     );
     ctx.drawImage(
       this.left_arrow_hat,
       this.left_arrow_hatx,
       this.left_arrow_haty,
       this.left_arrow_hat.width,
-      this.left_arrow_hat.height
+      this.left_arrow_hat.height,
     );
     ctx.drawImage(
       this.left_arrow_top,
       this.left_arrow_topx,
       this.left_arrow_topy,
       this.left_arrow_top.width,
-      this.left_arrow_top.height
+      this.left_arrow_top.height,
     );
     ctx.drawImage(
       this.left_arrow_bottom,
       this.left_arrow_bottomx,
       this.left_arrow_bottomy,
       this.left_arrow_bottom.width,
-      this.left_arrow_bottom.height
+      this.left_arrow_bottom.height,
     );
 
     // yipepee yipeee yipee
@@ -566,21 +564,21 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.top,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.bottom,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
 
     // CONTROL LOGIC FOR the arrow stuff
@@ -930,6 +928,9 @@ class BossFight extends Minigame {
     maze: 2,
     pattern: 3,
     end: 4,
+    mash_success: 5,
+    mash_fail: 6,
+    idle: 7,
   };
 
   static are_you_sure = {
@@ -969,9 +970,11 @@ class BossFight extends Minigame {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    this.barista = new Image();
-    this.barista.src =
-      "https://64.media.tumblr.com/51c1f4f6e31e22170c3c70ce1e857410/tumblr_ok8gprvz4h1vl7x77o1_1280.png";
+    this.normalBarista = new Image();
+    this.normalBarista.src = "assets/BARISTA.png";
+
+    this.evilBarista = load("assets/EVIL_BARISTA.png");
+    this.barista = this.normalBarista;
 
     this.patty = new Image();
     this.patty.src = "assets/PATTY.png";
@@ -988,7 +991,7 @@ class BossFight extends Minigame {
     this.prompt_text = BossFight.are_you_sure.default;
 
     // MASH
-    this.state = 4;
+    this.mashes = 0;
   }
 
   /**
@@ -1005,147 +1008,188 @@ class BossFight extends Minigame {
     // OUR CHARACTERS
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
 
-    if (this.game_state == BossFight.Game_state.default) {
-      // this is the continuous prompting thing
-      let ready = true;
-      ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    switch (this.game_state) {
+      case BossFight.Game_state.default:
+        // this is the continuous prompting thing
+        let ready = true;
+        ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
 
-      if (this.prompt_text == BossFight.are_you_sure.default) {
-        setTimeout(() => {
+        if (this.prompt_text == BossFight.are_you_sure.default) {
+          setTimeout(() => {
+            this.createButtons(ctx);
+            this.prompt_text = BossFight.are_you_sure.first;
+          }, 700);
+        } else {
           this.createButtons(ctx);
-          this.prompt_text = BossFight.are_you_sure.first;
-        }, 700);
-      } else {
-        this.createButtons(ctx);
-      }
-
-      //TODO: fix the timing
-      if (this.prompt_text == BossFight.are_you_sure.yes) {
-        setTimeout(() => {
-          this.game_state = BossFight.Game_state.mash;
-        }, 1000);
-      }
-
-      //if no button is clicked, ready is false
-      if (
-        inp.isMouseDown(MOUSE_LEFT) &&
-        inp.mouseX >= this.naur_buttonx &&
-        inp.mouseX <= this.naur_buttonx + 300 &&
-        inp.mouseY >= this.naur_buttony &&
-        inp.mouseY <= this.naur_buttony + 100
-      ) {
-        ready = false;
-        this.game_state = BossFight.Game_state.end;
-      }
-
-      // if yes clicked, want to advance
-      if (
-        inp.isMouseDown(MOUSE_LEFT) &&
-        inp.mouseX >= this.yes_buttonx &&
-        inp.mouseX <= this.yes_buttonx + 300 &&
-        inp.mouseY >= this.yes_buttony &&
-        inp.mouseY <= this.yes_buttony + 100
-      ) {
-        console.log("yes clicked");
-        console.log(this.prompt_text);
-
-        if (this.prompt_text == BossFight.are_you_sure.first) {
-          this.prompt_text = BossFight.are_you_sure.second;
-        } else if (this.prompt_text == BossFight.are_you_sure.second) {
-          this.prompt_text = BossFight.are_you_sure.third;
-        } else if (this.prompt_text == BossFight.are_you_sure.third) {
-          this.prompt_text = BossFight.are_you_sure.fourth;
-          console.log(ready);
-        } else if (this.prompt_text == BossFight.are_you_sure.fourth && ready) {
-          this.prompt_text = BossFight.are_you_sure.yes;
-          console.log("yes girl");
         }
-      }
-    } else if (this.game_state == BossFight.Game_state.mash) {
-      // health bar?
-      ctx.fillStyle = "black";
-      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
-      ctx.fillStyle = "red";
-      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
 
-      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
-
-      console.dir(this.state);
-      switch (this.state) {
-        case 4:
+        //TODO: fix the timing
+        if (this.prompt_text == BossFight.are_you_sure.yes) {
           mgr.timeout(() => {
-            this.state--;
+            this.game_state = BossFight.Game_state.mash;
+            let cancel = false;
+            this.cancel = () => {
+              cancel = true;
+            };
+
             mgr.timeout(() => {
-              this.state--;
-              mgr.timeout(() => {
-                this.state--;
-              }, FPS);
-            }, FPS);
+              if (!cancel) {
+                this.game_state = BossFight.Game_state.mash_fail;
+              }
+            }, 5 * FPS);
           }, FPS);
-          this.state--;
-        case 3:
-        case 2:
-        case 1:
-          const l = this.state.toString();
-          ctx.font = "40px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillStyle = "black";
-          ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
-          break;
-        case 0:
-          ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
+          this.game_state = this.game_state.idle;
+        }
 
-          const C = 1;
+        //if no button is clicked, ready is false
+        if (
+          inp.isMouseDown(MOUSE_LEFT) &&
+          inp.mouseX >= this.naur_buttonx &&
+          inp.mouseX <= this.naur_buttonx + 300 &&
+          inp.mouseY >= this.naur_buttony &&
+          inp.mouseY <= this.naur_buttony + 100
+        ) {
+          ready = false;
+          this.game_state = BossFight.Game_state.end;
+        }
 
-          const left = inp.isKeyDown(ARROW_LEFT);
-          const right = inp.isKeyDown(ARROW_RIGHT);
+        // if yes clicked, want to advance
+        if (
+          inp.isMouseDown(MOUSE_LEFT) &&
+          inp.mouseX >= this.yes_buttonx &&
+          inp.mouseX <= this.yes_buttonx + 300 &&
+          inp.mouseY >= this.yes_buttony &&
+          inp.mouseY <= this.yes_buttony + 100
+        ) {
+          console.log("yes clicked");
+          console.log(this.prompt_text);
 
-          this.vy -= C;
-
-          const D = 5;
-
-          if (left && !right) {
-            // this.vx -= D;
-            this.vy += D;
+          if (this.prompt_text == BossFight.are_you_sure.first) {
+            this.prompt_text = BossFight.are_you_sure.second;
+          } else if (this.prompt_text == BossFight.are_you_sure.second) {
+            this.prompt_text = BossFight.are_you_sure.third;
+          } else if (this.prompt_text == BossFight.are_you_sure.third) {
+            this.prompt_text = BossFight.are_you_sure.fourth;
+            console.log(ready);
+          } else if (
+            this.prompt_text == BossFight.are_you_sure.fourth &&
+            ready
+          ) {
+            this.prompt_text = BossFight.are_you_sure.yes;
+            console.log("yes girl");
           }
+        }
+        break;
+      case BossFight.Game_state.mash:
+        if (inp.isKeyDown(ARROW_LEFT)) {
+          this.mashes++;
+        }
 
-          if (right && !left) {
-            // this.vx += D;
-            this.vy += D;
-          }
+        if (inp.isKeyDown(ARROW_RIGHT)) {
+          this.mashes++;
+        }
 
-          this.x += this.vx;
-          this.y += this.vy;
+        // health bar?
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
 
-          this.x = Math.min(WIDTH, Math.max(0, this.x));
-          this.y = Math.min(HEIGHT, Math.max(0, this.y));
+        ctx.fillStyle = "black";
+        ctx.fillRect(10, 500, 100, 20);
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(10, 500, this.mashes * 5, 20);
 
-          ctx.drawImage(
-            this.patty,
-            this.x - this.width / 2,
-            this.y - this.height / 2,
-            this.width,
-            this.height
-          );
-          break;
-      }
-    } else if (this.game_state == BossFight.Game_state.maze) {
-      // health bar?
-      ctx.fillStyle = "black";
-      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
-      ctx.fillStyle = "red";
-      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+        ctx.drawImage(
+          this.barista,
+          WIDTH / 2,
+          HEIGHT / 4,
+          WIDTH / 2,
+          HEIGHT / 2,
+        );
 
-      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
-    } else {
-      // health bar?
-      ctx.fillStyle = "black";
-      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
-      ctx.fillStyle = "red";
-      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+        if (this.mashes >= 100 / 5) {
+          this.game_state = BossFight.Game_state.mash_success;
+        }
+        break;
+      case BossFight.Game_state.maze:
+        // health bar?
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
 
-      // the pattern
-      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+        ctx.drawImage(
+          this.barista,
+          WIDTH / 2,
+          HEIGHT / 4,
+          WIDTH / 2,
+          HEIGHT / 2,
+        );
+        break;
+      case BossFight.Game_state.mash_success:
+        this.health -= 180;
+        mgr.timeout(() => {
+          this.game_state = BossFight.Game_state.pattern;
+        });
+        // health bar?
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+        // the pattern
+        ctx.drawImage(
+          this.barista,
+          WIDTH / 2,
+          HEIGHT / 4,
+          WIDTH / 2,
+          HEIGHT / 2,
+        );
+
+        if (this.cancel) {
+          this.cancel();
+        }
+        this.cancel = null;
+        this.game_state = BossFight.Game_state.pattern;
+        break;
+      case BossFight.Game_state.mash_fail:
+        this.barista = this.evilBarista;
+        // health bar?
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+        // the pattern
+        ctx.drawImage(
+          this.barista,
+          WIDTH / 2,
+          HEIGHT / 4,
+          WIDTH / 2,
+          HEIGHT / 2,
+        );
+
+        this.cancel = null;
+        this.game_state = BossFight.Game_state.pattern;
+        break;
+      case BossFight.Game_state.idle:
+      default:
+        // health bar?
+        ctx.fillStyle = "black";
+        ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+        ctx.fillStyle = "red";
+        ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+        // the pattern
+        ctx.drawImage(
+          this.barista,
+          WIDTH / 2,
+          HEIGHT / 4,
+          WIDTH / 2,
+          HEIGHT / 2,
+        );
+        break;
     }
   }
 
@@ -1244,7 +1288,7 @@ class PhoneInBedMinigame {
           this.x - this.width / 2,
           this.y - this.height / 2,
           this.width,
-          this.height
+          this.height,
         );
         break;
     }
@@ -1301,7 +1345,7 @@ class GrabbableThing {
       this.x - this.w / 2,
       this.y - this.h / 2,
       this.w,
-      this.h
+      this.h,
     );
   }
 
@@ -1336,7 +1380,7 @@ class CleanUpMinigame extends Minigame {
         200,
         load("assets/trash bin.gif"),
         1,
-        1
+        1,
       ),
       new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
@@ -1355,7 +1399,7 @@ class CleanUpMinigame extends Minigame {
         type.h,
         type.img,
         type.bin,
-        z
+        z,
       );
 
       this.things.push(thing);
@@ -1456,7 +1500,7 @@ class MazeMinigame extends Minigame {
       326,
       32,
       32,
-      load("assets/cow face.png")
+      load("assets/cow face.png"),
     );
 
     this.creatures = [
@@ -1487,7 +1531,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2 - 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h
+          this.patty.h,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1503,7 +1547,7 @@ class MazeMinigame extends Minigame {
           this.patty.x + this.patty.w / 2 + 1,
           this.patty.y - this.patty.h / 2,
           1,
-          this.patty.h
+          this.patty.h,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1519,7 +1563,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y + this.patty.h / 2 + 1,
           this.patty.w,
-          1
+          1,
         );
 
         if (!dt.data.every((x) => x === 255)) {
@@ -1534,7 +1578,7 @@ class MazeMinigame extends Minigame {
           this.patty.x - this.patty.w / 2,
           this.patty.y - this.patty.h / 2 - 1,
           this.patty.w,
-          1
+          1,
         );
 
         if (!dt.data.every((x) => x === 255)) {
