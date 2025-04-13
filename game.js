@@ -206,8 +206,6 @@ class LerpManager {
       },
       left: time,
     });
-
-    console.dir(this.lerps);
   }
 }
 
@@ -217,7 +215,6 @@ class LerpManager {
  * @param {InputManager} inp
  */
 async function run(game, ctx, inp, dimness) {
-  console.log(dimness);
   const timer = document.getElementById("timer");
   const prompt = document.getElementById("prompt");
 
@@ -528,37 +525,28 @@ class DressUpMinigame extends Minigame {
     // yipepee yipeee yipee
     if (this.hat_state == DressUpMinigame.Outfit.CUTE) {
       this.hat.src = this.hat_cute;
-      console.log("we are doin things");
     } else if (this.hat_state == DressUpMinigame.Outfit.GOOD) {
       this.hat.src = this.hat_good;
-      console.log("we are doin things");
     } else {
       this.hat.src = this.hat_depressed;
-      console.log("we are doing things");
     }
 
     // yipepee yipeee yipee
     if (this.top_state == DressUpMinigame.Outfit.CUTE) {
       this.top.src = this.top_cute;
-      console.log("we are doin things");
     } else if (this.top_state == DressUpMinigame.Outfit.GOOD) {
       this.top.src = this.top_good;
-      console.log("we are doin things");
     } else {
       this.top.src = this.top_depressed;
-      console.log("we are doing things");
     }
 
     // yipepee yipeee yipee
     if (this.bottom_state == DressUpMinigame.Outfit.CUTE) {
       this.bottom.src = this.bottom_cute;
-      console.log("we are doin things");
     } else if (this.bottom_state == DressUpMinigame.Outfit.GOOD) {
       this.bottom.src = this.bottom_good;
-      console.log("we are doin things");
     } else {
       this.bottom.src = this.bottom_depressed;
-      console.log("we are doing things");
     }
 
     ctx.drawImage(
@@ -593,8 +581,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_haty &&
       inp.mouseY <= this.right_arrow_haty + 100
     ) {
-      console.log("mouse pressed: right arrow hat");
-
       //use state machine to figure out which hat to do
       if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.hat_state = DressUpMinigame.Outfit.GOOD;
@@ -613,8 +599,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_haty &&
       inp.mouseY <= this.left_arrow_haty + 100
     ) {
-      console.log("mouse pressed: left arrow hat");
-
       //use state machine to figure out which hat to do
       if (this.hat_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.hat_state = DressUpMinigame.Outfit.CUTE;
@@ -633,8 +617,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_topy &&
       inp.mouseY <= this.right_arrow_topy + 100
     ) {
-      console.log("mouse pressed: right arrow top");
-
       //use state machine to figure out which hat to do
       if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.top_state = DressUpMinigame.Outfit.GOOD;
@@ -653,8 +635,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_topy &&
       inp.mouseY <= this.left_arrow_topy + 100
     ) {
-      console.log("mouse pressed: left arrow top");
-
       //use state machine to figure out which hat to do
       if (this.top_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.top_state = DressUpMinigame.Outfit.CUTE;
@@ -673,8 +653,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.right_arrow_bottomy &&
       inp.mouseY <= this.right_arrow_bottomy + 100
     ) {
-      console.log("mouse pressed: right arrow bottom");
-
       //use state machine to figure out which hat to do
       if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.bottom_state = DressUpMinigame.Outfit.GOOD;
@@ -693,8 +671,6 @@ class DressUpMinigame extends Minigame {
       inp.mouseY >= this.left_arrow_bottomy &&
       inp.mouseY <= this.left_arrow_bottomy + 100
     ) {
-      console.log("mouse pressed: left arrow bottom");
-
       //use state machine to figure out which hat to do
       if (this.bottom_state == DressUpMinigame.Outfit.DEPRESSED) {
         this.bottom_state = DressUpMinigame.Outfit.CUTE;
@@ -757,6 +733,8 @@ class CookingMinigame extends Minigame {
       }
     }
 
+    this.bg = load("assets/cooking_back.png");
+
     this.nextRound();
   }
 
@@ -788,7 +766,15 @@ class CookingMinigame extends Minigame {
     }
   }
 
+  /**
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} i
+   * @param {LerpManager} mgr
+   * @param {InputManager} inp
+   */
   loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
     // Clear the canvas before redrawing
     ctx.fillStyle = "grey";
     ctx.fillRect(170, 170, 340, 340);
@@ -843,7 +829,7 @@ class CookingMinigame extends Minigame {
             if (this.userInput.length === this.sequence.length) {
               if (this.userInput.join() === this.sequence.join()) {
                 console.log("Correct sequence!");
-                this.nextRound();
+                mgr.timeout(() => this.nextRound(), FPS);
               } else {
                 console.log("Incorrect sequence!");
                 this.resetGame();
@@ -859,8 +845,6 @@ class CookingMinigame extends Minigame {
   drawTiles(ctx) {
     // Draw all tiles in the grid (always visible)
     for (let tile of this.tiles) {
-      ctx.fillStyle = "#ddd";
-      ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
       ctx.strokeStyle = "#000";
       ctx.strokeRect(tile.x, tile.y, this.tileSize, this.tileSize);
     }
@@ -907,8 +891,8 @@ class PhoneInBedMinigame {
     this.y = (HEIGHT * 3) / 4;
     this.vx = 0;
     this.vy = 0;
-    this.width = 256;
-    this.height = 256;
+    this.width = 350;
+    this.height = 350;
     this.phone = load("assets/PHONE.png");
     this.patty = load("assets/PATTY_BED.png");
   }
@@ -918,6 +902,7 @@ class PhoneInBedMinigame {
    */
   setup(ctx) {
     this.state = 4;
+    this.bg = load("assets/wake_up.png");
   }
 
   /**
@@ -925,7 +910,7 @@ class PhoneInBedMinigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
-    console.dir(this.state);
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
     switch (this.state) {
       case 4:
         mgr.timeout(() => {
@@ -1064,17 +1049,9 @@ class CleanUpMinigame extends Minigame {
     ];
 
     this.bins = [
-      new GrabbableThing(100, 500, 200, 150, load("assets/dish bin.jpg"), 0, 0),
-      new GrabbableThing(
-        300,
-        500,
-        150,
-        200,
-        load("assets/trash bin.gif"),
-        1,
-        1,
-      ),
-      new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
+      new GrabbableThing(100, 500, 200, 200, load("assets/DISHBIN.png"), 0, 0),
+      new GrabbableThing(300, 500, 200, 200, load("assets/TRASH.png"), 1, 1),
+      new GrabbableThing(500, 500, 200, 200, load("assets/HAMPER.png"), 2, 2),
     ];
 
     /**
@@ -1101,6 +1078,8 @@ class CleanUpMinigame extends Minigame {
      * @type {number | null}
      */
     this.grabbed = null;
+
+    this.bg = load("assets/cleanup_back.png");
   }
 
   /**
@@ -1110,6 +1089,7 @@ class CleanUpMinigame extends Minigame {
    * @param {InputManager} inp
    */
   loop(ctx, i, mgr, inp) {
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
     if (inp.isMouseDown(MOUSE_LEFT)) {
       this.grabbed = null;
       for (const i in this.things) {
