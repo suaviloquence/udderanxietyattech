@@ -1,11 +1,14 @@
 body {
-    background: green;
+    background: #9cafb7;
     margin: 0;
     padding: 0;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: "Underdog", sans-serif;
+    box-sizing: border-box;
+    padding: 50px;
 }
 #container {
     width: 100%;
@@ -17,13 +20,45 @@ body {
 }
 
 #game {
-    border: 5px solid yellow;
+    border: 5px solid #a5be00;
     margin: auto;
 }
 
 #prompt {
     width: 720px;
-    border: 5px solid yellow;
-    background-color: lime;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 5px solid #4281a4;
+    background-color: #064789;
     height: 10%;
+    text-align: center;
+    align-content: center;
+    color: #ebf2fa;
+}
+
+#right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 500px;
+    background: #fe938c;
+    border: 5px solid #ebf2fa;
+    padding: 20px;
+    height: 80%;
+    box-sizing: border-box;
+}
+
+#todo-cnt {
+}
+
+@font-face {
+    font-family: "Underdog";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/Underdog/Underdog-Regular.ttf") format("truetype");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+        U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+        U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+>>>>>>> Stashed changes
 }

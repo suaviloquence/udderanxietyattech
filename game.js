@@ -18,18 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const ctx = canvas.getContext("2d");
   const inp = new InputManager(canvas);
   canvas.focus();
+
+  await run(new IntroMinigame(), ctx, inp, 1);
+
   let dimness = 0.5;
   let boss;
   do {
     boss = new BossFight();
+    dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+    dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+    dimness = await run(new CookingMinigame(), ctx, inp, dimness);
+    dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+    dimness = await run(new MazeMinigame(), ctx, inp, dimness);
     dimness = await run(boss, ctx, inp, dimness);
   } while (!boss.win());
-  // dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
-  // dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
-  // dimness = await run(new CookingMinigame(), ctx, inp, dimness);
-  // dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
-  // dimness = await run(new MazeMinigame(), ctx, inp, dimness);
-  // dimness = await run(new MeowMinigame(), ctx, inp, dimness);
+
+  dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
 class InputManager {
@@ -1521,7 +1525,7 @@ class MazeMinigame extends Minigame {
       326,
       32,
       32,
-      load("assets/cow face.png"),
+      load("assets/PATTY_ICON.png"),
     );
 
     this.creatures = [
@@ -1665,4 +1669,39 @@ function load(src) {
   const image = new Image();
   image.src = src;
   return image;
+}
+
+class IntroMinigame extends Minigame {
+  win() {
+    return false;
+  }
+
+  time() {
+    return 7;
+  }
+
+  prompt() {
+    return this.prompt_;
+  }
+
+  setup(ctx) {
+    this.prompt_ =
+      "Before I came to live on my own, I never really realized how hard it was to just live. Getting out of bed feels like a struggle, none of my clothes look good on me, and even cooking is confusing. ";
+    this.bg = load("assets/intro_back.png");
+    this.state = 0;
+  }
+
+  loop(ctx, i, mgr, imp) {
+    ctx.drawImage(this.bg, 0, 0, WIDTH, HEIGHT);
+
+    switch (this.state) {
+      case 0:
+        this.state++;
+        mgr.timeout(() => {
+          this.prompt_ =
+            "I’ve fallen behind in life bit by bit. I haven’t even had time to clean up my room, much less to visit my friends…";
+        }, FPS * 4);
+        break;
+    }
+  }
 }
