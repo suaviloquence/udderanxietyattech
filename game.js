@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   canvas.focus();
 
   run(new DressUpMinigame(), ctx, inp);
+  // run(new CookingMinigame(), ctx, inp);
   // await run(new PhoneInBedMinigame(), ctx, inp);
   // await run(new MeowMinigame(), ctx, inp);
 });
@@ -307,8 +308,8 @@ class MeowMinigame extends Minigame {
 
 class DressUpMinigame extends Minigame {
   static Outfit = {
-    CUTE: 1,
-    GOOD: 2,
+    CUTE: 2,
+    GOOD: 1,
     DEPRESSED: 0,
   };
 
@@ -320,42 +321,35 @@ class DressUpMinigame extends Minigame {
     // how we want it to start
     // make it such that the screen of outfits is up, 3 outfits: 1 really bad one, 1 good one, 1 eh one
 
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    // background image
+    this.bkg = new Image();
+    this.bkg.src = "assets/dressup/phone_back.png";
 
-    // for the confirm button
-    ctx.fillStyle = "grey";
-    ctx.fillRect(
-      CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2,
-      WIDTH / 2,
-      HEIGHT / 12
-    );
+    // confirm button
+    this.confirm = new Image();
+    this.confirm.src = "assets/dressup/CONFIRM.png";
 
-    // patty TODO: CHANGE TO ACTUAL PHOTO
+    // patty
     this.patty = new Image();
     this.patty.src = "assets/dressup/PATTY_DRESS.png";
 
     // arrows
     this.right_arrow_hat = new Image();
-    this.right_arrow_hat.src =
-      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_hat.src = "assets/dressup/ARROW_R.png";
     this.right_arrow_hat.width = 100;
     this.right_arrow_hat.height = 100;
     this.right_arrow_hatx = CENTER_X + 250 - this.right_arrow_hat.width / 2;
     this.right_arrow_haty = CENTER_Y - 250 - this.right_arrow_hat.height / 2;
 
     this.right_arrow_top = new Image();
-    this.right_arrow_top.src =
-      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_top.src = "assets/dressup/ARROW_R.png";
     this.right_arrow_top.width = 100;
     this.right_arrow_top.height = 100;
     this.right_arrow_topx = CENTER_X + 250 - this.right_arrow_top.width / 2;
     this.right_arrow_topy = CENTER_Y - this.right_arrow_top.height / 2;
 
     this.right_arrow_bottom = new Image();
-    this.right_arrow_bottom.src =
-      "https://thumb.ac-illust.com/34/34d2b78a1be7d243530998ce06a184f5_t.jpeg";
+    this.right_arrow_bottom.src = "assets/dressup/ARROW_R.png";
     this.right_arrow_bottom.width = 100;
     this.right_arrow_bottom.height = 100;
     this.right_arrow_bottomx =
@@ -365,21 +359,21 @@ class DressUpMinigame extends Minigame {
 
     // for these arrows, flip the other ones... maybe do it after downloading instead of how they're being hosted rn
     this.left_arrow_hat = new Image();
-    this.left_arrow_hat.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_hat.src = "assets/dressup/ARROW_L.png";
     this.left_arrow_hat.width = 100;
     this.left_arrow_hat.height = 100;
     this.left_arrow_hatx = CENTER_X - 250 - this.left_arrow_hat.width / 2;
     this.left_arrow_haty = CENTER_Y - 250 - this.left_arrow_hat.height / 2;
 
     this.left_arrow_top = new Image();
-    this.left_arrow_top.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_top.src = "assets/dressup/ARROW_L.png";
     this.left_arrow_top.width = 100;
     this.left_arrow_top.height = 100;
     this.left_arrow_topx = CENTER_X - 250 - this.left_arrow_top.width / 2;
     this.left_arrow_topy = CENTER_Y - this.left_arrow_top.height / 2;
 
     this.left_arrow_bottom = new Image();
-    this.left_arrow_bottom.src = "https://dinopixel.com/preload/0324/arrow.png";
+    this.left_arrow_bottom.src = "assets/dressup/ARROW_L.png";
     this.left_arrow_bottom.width = 100;
     this.left_arrow_bottom.height = 100;
     this.left_arrow_bottomx = CENTER_X - 250 - this.left_arrow_bottom.width / 2;
@@ -393,25 +387,19 @@ class DressUpMinigame extends Minigame {
 
     // the potential fits fr
     this.hat = new Image();
-    this.hat_depressed =
-      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.hat_depressed = "assets/dressup/HAT_D.png";
     this.hat_cute = "assets/dressup/HAT_C.png";
-    this.hat_good =
-      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
+    this.hat_good = "assets/dressup/HAT_G.png";
 
     this.top = new Image();
-    this.top_depressed =
-      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.top_depressed = "assets/dressup/TOP_D.png";
     this.top_cute = "assets/dressup/TOP_C.png";
-    this.top_good =
-      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
+    this.top_good = "assets/dressup/TOP_G.png";
 
     this.bottom = new Image();
-    this.bottom_depressed =
-      "https://onlinepngtools.com/images/examples-onlinepngtools/empty-transparent.png";
+    this.bottom_depressed = "assets/dressup/BOTTOM_D.png";
     this.bottom_cute = "assets/dressup/BOTTOM_C.png";
-    this.bottom_good =
-      "https://png.pngtree.com/element_our/20190604/ourmid/pngtree-hat-straw-hat-cute-image_1484940.jpg";
+    this.bottom_good = "assets/dressup/BOTTOM_G.png";
   }
 
   /**
@@ -423,15 +411,14 @@ class DressUpMinigame extends Minigame {
     // patty in the middle with arrows that are clickable to change that outfit
     // button will be the ending to the loop if not the timer
     // timer in the top left
-
-    // for the confirm button
-    ctx.fillStyle = "grey";
-    ctx.fillRect(
+    ctx.drawImage(this.bkg, 0, 0);
+    ctx.drawImage(
+      this.confirm,
       CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2,
+      CENTER_Y + 100 + CENTER_Y / 2
+    ),
       WIDTH / 2,
-      HEIGHT / 12
-    );
+      HEIGHT / 2;
 
     // the constant images
     ctx.drawImage(
@@ -671,6 +658,172 @@ class DressUpMinigame extends Minigame {
    */
   time() {
     // how long we want minigame to last!
+    return 10;
+  }
+}
+
+class CookingMinigame extends Minigame {
+  constructor() {
+    super(); // Make sure to call the parent constructor if needed
+
+    this.tileSize = 100;
+    this.tileGap = 10;
+    this.gridSize = 3;
+    this.tiles = [];
+
+    this.sequence = [];
+    this.userInput = [];
+    this.acceptingInput = false;
+    this.currentFlash = -1;
+    this.lastFlashTime = 0;
+    this.flashStep = 0;
+    this.flashInterval = 600;
+
+    this.userFlashIndex = -1;
+    this.userFlashTime = 0;
+    this.userFlashInterval = 600; // same as red flash
+  }
+
+  // Set up the tiles for the grid
+  setup(ctx) {
+    this.tiles = [];
+    for (let row = 0; row < this.gridSize; row++) {
+      for (let col = 0; col < this.gridSize; col++) {
+        const x = col * (this.tileSize + this.tileGap) + this.tileGap + 170;
+        const y = row * (this.tileSize + this.tileGap) + this.tileGap + 170;
+        this.tiles.push({ x, y, index: row * this.gridSize + col });
+      }
+    }
+
+    this.nextRound();
+  }
+
+  // Start the next round by adding a random tile to the sequence
+  nextRound() {
+    const next = Math.floor(Math.random() * this.tiles.length);
+    this.sequence.push(next);
+    this.userInput = [];
+    this.flashStep = 0;
+    this.lastFlashTime = performance.now();
+    this.acceptingInput = false;
+    this.flashNextTile();
+  }
+
+  // Flash the next tile in the sequence
+  flashNextTile() {
+    if (this.flashStep < this.sequence.length) {
+      this.currentFlash = this.sequence[this.flashStep];
+      const r = Math.random() * 255;
+      const g = Math.random() * 255;
+      const b = Math.random() * 255;
+      this.currentColor = `rgb(${r}, ${g}, ${b})`;
+      this.flashStep++;
+      this.lastFlashTime = performance.now();
+    } else {
+      this.acceptingInput = true; // Allow user input after sequence is flashed
+      this.currentFlash = -1;
+      this.currentColor = null;
+    }
+  }
+
+  loop(ctx, i, mgr, inp) {
+    // Clear the canvas before redrawing
+    ctx.fillStyle = "grey";
+    ctx.fillRect(170, 170, 340, 340);
+    // ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    this.drawTiles(ctx);
+
+    const currentTime = performance.now();
+
+    if (!this.acceptingInput) {
+      if (currentTime - this.lastFlashTime >= this.flashInterval) {
+        this.flashNextTile();
+      }
+
+      if (this.currentFlash !== -1) {
+        this.drawFlashingTile(ctx, this.currentColor);
+      }
+    }
+
+    // 🔵 Show blue flash if user clicked recently
+    if (this.userFlashIndex !== -1) {
+      if (currentTime - this.userFlashTime <= this.userFlashInterval) {
+        const tile = this.tiles[this.userFlashIndex];
+        ctx.fillStyle = "#0000FF";
+        ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
+      } else {
+        this.userFlashIndex = -1;
+      }
+    }
+
+    // If the game is in the input phase, check the user's input
+    if (this.acceptingInput) {
+      if (inp.isMouseDown(MOUSE_LEFT)) {
+        // Check if the user clicked on any tile
+        const mouseX = inp.mouseX;
+        const mouseY = inp.mouseY;
+
+        for (let tile of this.tiles) {
+          if (
+            mouseX >= tile.x &&
+            mouseX <= tile.x + this.tileSize &&
+            mouseY >= tile.y &&
+            mouseY <= tile.y + this.tileSize
+          ) {
+            this.userInput.push(tile.index); // Store user input
+
+            // TODO: i want to flash the tile pressed blue
+
+            // Flash the tile blue
+            this.userFlashIndex = tile.index;
+            this.userFlashTime = performance.now(); // Flash duration (e.g., 300ms)
+
+            if (this.userInput.length === this.sequence.length) {
+              if (this.userInput.join() === this.sequence.join()) {
+                console.log("Correct sequence!");
+                this.nextRound();
+              } else {
+                console.log("Incorrect sequence!");
+                this.resetGame();
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  drawTiles(ctx) {
+    // Draw all tiles in the grid (always visible)
+    for (let tile of this.tiles) {
+      ctx.fillStyle = "#ddd";
+      ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
+      ctx.strokeStyle = "#000";
+      ctx.strokeRect(tile.x, tile.y, this.tileSize, this.tileSize);
+    }
+  }
+
+  drawFlashingTile(ctx, color) {
+    // Draw the tile that's currently flashing
+    if (this.currentFlash !== -1) {
+      const tile = this.tiles[this.currentFlash];
+      ctx.fillStyle = color; // Highlight the flashing tile with red
+      ctx.fillRect(tile.x, tile.y, this.tileSize, this.tileSize);
+    }
+  }
+
+  resetGame() {
+    // Reset the game for a new round
+    console.log("Game Over! Resetting...");
+    this.sequence = [];
+    this.userInput = [];
+    this.acceptingInput = false;
+    // this.nextRound();
+  }
+
+  // Time to complete this round (e.g., 15 seconds)
+  time() {
     return 20;
   }
 }
