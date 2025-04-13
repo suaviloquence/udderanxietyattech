@@ -214,11 +214,15 @@ class LerpManager {
  * @param {InputManager} inp
  */
 async function run(game, ctx, inp) {
+  const timer = document.getElementById("timer");
+  const prompt = document.getElementById("prompt");
   game.setup(ctx);
   let i = 0;
   let handler = null;
 
   let mgr = new LerpManager();
+
+  timer.textContent = game.time().toString();
 
   return new Promise((resolve, reject) => {
     handler = setInterval(() => {
@@ -226,6 +230,12 @@ async function run(game, ctx, inp) {
       if (i > FPS * game.time()) {
         clearInterval(handler);
         resolve(null);
+      }
+
+      prompt.textContent = game.prompt();
+
+      if (i % FPS === 0) {
+        timer.textContent = `${game.time() - i / FPS}`;
       }
 
       inp.frameStart();
@@ -261,6 +271,20 @@ class Minigame {
    * @returns {Number}
    */
   time() {
+    throw new Error("unimplemented");
+  }
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    throw new Error("unimplemented");
+  }
+
+  /**
+   * @returns {string}
+   */
+  prompt() {
     throw new Error("unimplemented");
   }
 }
@@ -306,6 +330,13 @@ class MeowMinigame extends Minigame {
         }, 20);
       }
     }
+  }
+
+  /**
+   * @returns {string}
+   */
+  prompt() {
+    return "meow meow meow";
   }
 }
 
@@ -402,6 +433,13 @@ class PhoneInBedMinigame {
    */
   time() {
     return 10;
+  }
+
+  /**
+   * @returns {string}
+   */
+  prompt() {
+    return "Click LEFT and RIGHT repeatedly to balance yourself and keep center to escape your phone's grasp";
   }
 }
 
@@ -561,6 +599,13 @@ class CleanUpMinigame extends Minigame {
   time() {
     return 10;
   }
+
+  /**
+   * @returns {string}
+   */
+  prompt() {
+    return `Drag and drop all ${this.things.length} items to their corresponding place`;
+  }
 }
 
 class MazeMinigame extends Minigame {
@@ -693,5 +738,9 @@ class MazeMinigame extends Minigame {
    */
   time() {
     return 15;
+  }
+
+  prompt() {
+    return `Navigate through the maze and find ${this.creatures.length} more frien${this.creatures.length === 1 ? "d" : "ds"}`;
   }
 }
