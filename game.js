@@ -19,13 +19,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
   let dimness = 0.5;
-
-  dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
-  dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
-  dimness = await run(new CookingMinigame(), ctx, inp, dimness);
-  dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
-  dimness = await run(new MazeMinigame(), ctx, inp, dimness);
-  dimness = await run(new MeowMinigame(), ctx, inp, dimness);
+  run(new BossFight(), ctx, inp, dimness);
+  // dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+  // dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+  // dimness = await run(new CookingMinigame(), ctx, inp, dimness);
+  // dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+  // dimness = await run(new MazeMinigame(), ctx, inp, dimness);
+  // dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
 class InputManager {
@@ -914,10 +914,45 @@ class BossFight extends Minigame {
    */
 
   static Game_state = {
-    CUTE: 2,
-    GOOD: 1,
-    DEPRESSED: 0,
+    default: 0,
+    mash: 1,
+    maze: 2,
+    pattern: 3,
+    end: 4,
   };
+
+  static are_you_sure = {
+    default:
+      "Let’s see, that barista is the only other person I see here. I need to get used to talking to people more, so here goes nothing.",
+    first: "Are you sure you want to approach?",
+    second: "Are you sure?",
+    third: "Are you sure??",
+    fourth: "Are you sure???",
+    no: "No, not today… Maybe another time…",
+    yes: "This feels intense, I haven’t even said anything but I feel so scared. I can’t back down now though, I’m too far in to run now. Meeting new people is hard, but I WILL talk to them. I WILL order my coffee!",
+  };
+
+  createButtons(ctx) {
+    //Buttons:
+    //naur button
+
+    ctx.fillStyle = "grey";
+    ctx.fillRect(WIDTH / 2 + 20, HEIGHT / 2 + 200, 300, 100);
+
+    ctx.fillStyle = "black";
+    ctx.font = "24px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("no... i'm not", WIDTH / 2 + 20 + 150, HEIGHT / 2 + 200 + 50);
+
+    // yes button
+
+    ctx.fillStyle = "grey";
+    ctx.fillRect(40, HEIGHT / 2 + 200, 300, 100);
+
+    ctx.fillStyle = "black";
+    ctx.fillText("yes!", 40 + 150, HEIGHT / 2 + 200 + 50);
+  }
 
   setup(ctx) {
     ctx.fillStyle = "white";
@@ -933,6 +968,7 @@ class BossFight extends Minigame {
     this.health = WIDTH / 2;
 
     this.game_state = BossFight.Game_state.default;
+    this.prompt_text = BossFight.are_you_sure.default;
   }
 
   /**
@@ -947,14 +983,104 @@ class BossFight extends Minigame {
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     // OUR CHARACTERS
-    ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
 
-    // health bar?
-    ctx.fillStyle = "black";
-    ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
-    ctx.fillStyle = "red";
-    ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+    // button info
+    let naur_buttonx = WIDTH / 2 + 20;
+    let naur_buttony = HEIGHT / 2 + 200;
+    let yes_buttonx = 40;
+    let yes_buttony = HEIGHT / 2 + 200;
+
+    if (this.game_state == BossFight.Game_state.default) {
+      // this is the continuous prompting thing
+      let ready = true;
+      ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+
+      if (this.prompt_text == BossFight.are_you_sure.default) {
+        setTimeout(() => {
+          this.createButtons(ctx);
+          this.prompt_text = BossFight.are_you_sure.first;
+        }, 700);
+      } else {
+        this.createButtons(ctx);
+      }
+
+      //TODO: fix the timing
+      if (this.prompt_text == BossFight.are_you_sure.yes) {
+        setTimeout(() => {
+          this.game_state = BossFight.Game_state.mash;
+        }, 1000);
+      }
+
+      //if no button is clicked, ready is false
+      if (
+        inp.isMouseDown(MOUSE_LEFT) &&
+        inp.mouseX >= naur_buttonx &&
+        inp.mouseX <= naur_buttonx + 300 &&
+        inp.mouseY >= naur_buttony &&
+        inp.mouseY <= naur_buttony + 100
+      ) {
+        ready = false;
+        this.game_state = BossFight.Game_state.end;
+      }
+
+      // if yes clicked, want to advance
+      if (
+        inp.isMouseDown(MOUSE_LEFT) &&
+        inp.mouseX >= yes_buttonx &&
+        inp.mouseX <= yes_buttonx + 300 &&
+        inp.mouseY >= yes_buttony &&
+        inp.mouseY <= yes_buttony + 100
+      ) {
+        console.log("yes clicked");
+        console.log(this.prompt_text);
+
+        if (this.prompt_text == BossFight.are_you_sure.first) {
+          this.prompt_text = BossFight.are_you_sure.second;
+        } else if (this.prompt_text == BossFight.are_you_sure.second) {
+          this.prompt_text = BossFight.are_you_sure.third;
+        } else if (this.prompt_text == BossFight.are_you_sure.third) {
+          this.prompt_text = BossFight.are_you_sure.fourth;
+          console.log(ready);
+        } else if (this.prompt_text == BossFight.are_you_sure.fourth && ready) {
+          this.prompt_text = BossFight.are_you_sure.yes;
+          console.log("yes girl");
+        }
+      }
+    } else if (this.game_state == BossFight.Game_state.mash) {
+      // health bar?
+      ctx.fillStyle = "black";
+      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+      ctx.fillStyle = "red";
+      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    } else if (this.game_state == BossFight.Game_state.maze) {
+      // health bar?
+      ctx.fillStyle = "black";
+      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+      ctx.fillStyle = "red";
+      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    } else {
+      // health bar?
+      ctx.fillStyle = "black";
+      ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
+      ctx.fillStyle = "red";
+      ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
+
+      // the pattern
+      ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    }
+  }
+
+  prompt() {
+    if (this.game_state == BossFight.Game_state.default) {
+      return this.prompt_text;
+    } else {
+      return "";
+    }
   }
 
   /**
