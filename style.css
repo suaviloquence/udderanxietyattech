@@ -1,5 +1,5 @@
 body {
-    background: green;
+    background: #9cafb7;
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -7,6 +7,8 @@ body {
     justify-content: center;
     align-items: center;
     font-family: "Underdog", sans-serif;
+    box-sizing: border-box;
+    padding: 50px;
 }
 #container {
     width: 100%;
@@ -18,18 +20,34 @@ body {
 }
 
 #game {
-    border: 5px solid yellow;
+    border: 5px solid #a5be00;
     margin: auto;
 }
 
 #prompt {
     width: 720px;
-    border: 5px solid yellow;
-    background-color: lime;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 5px solid #4281a4;
+    background-color: #064789;
     height: 10%;
     text-align: center;
     align-content: center;
+    color: #ebf2fa;
 }
+
+#right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 500px;
+    background: #fe938c;
+    border: 5px solid #ebf2fa;
+    padding: 20px;
+    height: 80%;
+    box-sizing: border-box;
+}
+
 
 @font-face {
     font-family: "Underdog";
