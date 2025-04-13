@@ -909,6 +909,17 @@ class CookingMinigame extends Minigame {
 }
 
 class BossFight extends Minigame {
+  constructor() {
+    // MASH
+    super();
+    this.x = WIDTH / 2;
+    this.y = (HEIGHT * 3) / 4;
+    this.vx = 0;
+    this.vy = 0;
+    this.width = 256;
+    this.height = 256;
+  }
+
   /**
    * @param {CanvasRenderingContext2D} ctx
    */
@@ -968,7 +979,16 @@ class BossFight extends Minigame {
     this.health = WIDTH / 2;
 
     this.game_state = BossFight.Game_state.default;
+
+    // DEFAULT
+    this.naur_buttonx = WIDTH / 2 + 20;
+    this.naur_buttony = HEIGHT / 2 + 200;
+    this.yes_buttonx = 40;
+    this.yes_buttony = HEIGHT / 2 + 200;
     this.prompt_text = BossFight.are_you_sure.default;
+
+    // MASH
+    this.state = 4;
   }
 
   /**
@@ -984,12 +1004,6 @@ class BossFight extends Minigame {
 
     // OUR CHARACTERS
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
-
-    // button info
-    let naur_buttonx = WIDTH / 2 + 20;
-    let naur_buttony = HEIGHT / 2 + 200;
-    let yes_buttonx = 40;
-    let yes_buttony = HEIGHT / 2 + 200;
 
     if (this.game_state == BossFight.Game_state.default) {
       // this is the continuous prompting thing
@@ -1015,10 +1029,10 @@ class BossFight extends Minigame {
       //if no button is clicked, ready is false
       if (
         inp.isMouseDown(MOUSE_LEFT) &&
-        inp.mouseX >= naur_buttonx &&
-        inp.mouseX <= naur_buttonx + 300 &&
-        inp.mouseY >= naur_buttony &&
-        inp.mouseY <= naur_buttony + 100
+        inp.mouseX >= this.naur_buttonx &&
+        inp.mouseX <= this.naur_buttonx + 300 &&
+        inp.mouseY >= this.naur_buttony &&
+        inp.mouseY <= this.naur_buttony + 100
       ) {
         ready = false;
         this.game_state = BossFight.Game_state.end;
@@ -1027,10 +1041,10 @@ class BossFight extends Minigame {
       // if yes clicked, want to advance
       if (
         inp.isMouseDown(MOUSE_LEFT) &&
-        inp.mouseX >= yes_buttonx &&
-        inp.mouseX <= yes_buttonx + 300 &&
-        inp.mouseY >= yes_buttony &&
-        inp.mouseY <= yes_buttony + 100
+        inp.mouseX >= this.yes_buttonx &&
+        inp.mouseX <= this.yes_buttonx + 300 &&
+        inp.mouseY >= this.yes_buttony &&
+        inp.mouseY <= this.yes_buttony + 100
       ) {
         console.log("yes clicked");
         console.log(this.prompt_text);
@@ -1055,6 +1069,66 @@ class BossFight extends Minigame {
       ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
 
       ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+
+      console.dir(this.state);
+      switch (this.state) {
+        case 4:
+          mgr.timeout(() => {
+            this.state--;
+            mgr.timeout(() => {
+              this.state--;
+              mgr.timeout(() => {
+                this.state--;
+              }, FPS);
+            }, FPS);
+          }, FPS);
+          this.state--;
+        case 3:
+        case 2:
+        case 1:
+          const l = this.state.toString();
+          ctx.font = "40px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "black";
+          ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
+          break;
+        case 0:
+          ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
+
+          const C = 1;
+
+          const left = inp.isKeyDown(ARROW_LEFT);
+          const right = inp.isKeyDown(ARROW_RIGHT);
+
+          this.vy -= C;
+
+          const D = 5;
+
+          if (left && !right) {
+            // this.vx -= D;
+            this.vy += D;
+          }
+
+          if (right && !left) {
+            // this.vx += D;
+            this.vy += D;
+          }
+
+          this.x += this.vx;
+          this.y += this.vy;
+
+          this.x = Math.min(WIDTH, Math.max(0, this.x));
+          this.y = Math.min(HEIGHT, Math.max(0, this.y));
+
+          ctx.drawImage(
+            this.patty,
+            this.x - this.width / 2,
+            this.y - this.height / 2,
+            this.width,
+            this.height
+          );
+          break;
+      }
     } else if (this.game_state == BossFight.Game_state.maze) {
       // health bar?
       ctx.fillStyle = "black";
