@@ -19,10 +19,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
 
-  await run(new MazeMinigame(), ctx, inp);
-  await run(new CleanUpMinigame(), ctx, inp);
-  await run(new PhoneInBedMinigame(), ctx, inp);
-  await run(new MeowMinigame(), ctx, inp);
+  let dimness = 0.5;
+
+  dimness = await run(new MazeMinigame(), ctx, inp, dimness);
+  dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+  dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+  dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
 class InputManager {
@@ -213,7 +215,8 @@ class LerpManager {
  * @param {CanvasRenderingContext2D} ctx
  * @param {InputManager} inp
  */
-async function run(game, ctx, inp) {
+async function run(game, ctx, inp, dimness) {
+  console.log(dimness);
   const timer = document.getElementById("timer");
   const prompt = document.getElementById("prompt");
   game.setup(ctx);
@@ -229,7 +232,11 @@ async function run(game, ctx, inp) {
       i += 1;
       if (i > FPS * game.time()) {
         clearInterval(handler);
-        resolve(null);
+        if (game.win()) {
+          resolve(Math.min(dimness + 0.15, 1));
+        } else {
+          resolve(Math.max(dimness - 0.15, 0.5));
+        }
       }
 
       prompt.textContent = game.prompt();
@@ -245,6 +252,16 @@ async function run(game, ctx, inp) {
       game.loop(ctx, i, mgr, inp);
       mgr.loop();
       inp.frameEnd();
+
+      let id = ctx.getImageData(0, 0, WIDTH, HEIGHT);
+      let data = new ImageData(WIDTH, HEIGHT);
+      for (let i = 0; i < id.data.length; i += 4) {
+        data.data[i] = id.data[i] * dimness;
+        data.data[i + 1] = id.data[i + 1] * dimness;
+        data.data[i + 2] = id.data[i + 2] * dimness;
+        data.data[i + 3] = id.data[i + 3];
+      }
+      ctx.putImageData(data, 0, 0);
     }, 1000.0 / FPS);
   });
 }
@@ -441,6 +458,10 @@ class PhoneInBedMinigame {
   prompt() {
     return "Click LEFT and RIGHT repeatedly to balance yourself and keep center to escape your phone's grasp";
   }
+
+  win() {
+    return this.y >= (HEIGHT * 3) / 4;
+  }
 }
 
 /**
@@ -502,17 +523,17 @@ class CleanUpMinigame extends Minigame {
     ];
 
     this.bins = [
-      new GrabbableThing(100, 100, 200, 150, load("assets/dish bin.jpg"), 0, 0),
+      new GrabbableThing(100, 500, 200, 150, load("assets/dish bin.jpg"), 0, 0),
       new GrabbableThing(
         300,
-        400,
+        500,
         150,
         200,
         load("assets/trash bin.gif"),
         1,
         1,
       ),
-      new GrabbableThing(500, 600, 100, 250, load("assets/hamper.jpeg"), 2, 2),
+      new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
     ];
 
     /**
@@ -520,11 +541,11 @@ class CleanUpMinigame extends Minigame {
      */
     this.things = [];
 
-    for (let z = 0; z < 50; z++) {
+    for (let z = 0; z < 10; z++) {
       const type = thingTypes[Math.floor(Math.random() * thingTypes.length)];
       const thing = new GrabbableThing(
         Math.random() * WIDTH,
-        Math.random() * HEIGHT,
+        Math.random() * 400,
         type.w,
         type.h,
         type.img,
@@ -604,7 +625,15 @@ class CleanUpMinigame extends Minigame {
    * @returns {string}
    */
   prompt() {
-    return `Drag and drop all ${this.things.length} items to their corresponding place`;
+    if (this.win()) {
+      return "Decluttering complete!";
+    } else {
+      return `Drag and drop ${this.things.length - 4} more item${this.things.length - 4 === 1 ? "" : "s"} to their corresponding place`;
+    }
+  }
+
+  win() {
+    return this.things.length <= 4;
   }
 }
 
@@ -741,6 +770,14 @@ class MazeMinigame extends Minigame {
   }
 
   prompt() {
-    return `Navigate through the maze and find ${this.creatures.length} more frien${this.creatures.length === 1 ? "d" : "ds"}`;
+    if (this.win()) {
+      return "Enjoy the walk with your friends!";
+    } else {
+      return `Navigate through the maze and find at least ${this.creatures.length - 1} more frien${this.creatures.length - 1 === 1 ? "d" : "ds"}`;
+    }
+  }
+
+  win() {
+    return this.creatures.length <= 1;
   }
 }
