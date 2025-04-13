@@ -388,7 +388,7 @@ class DressUpMinigame extends Minigame {
 
     // confirm button
     this.confirm = new Image();
-    this.confirm.src = "assets/dressup/CONFIRM.png";
+    this.confirm.src = "assets/dressup/CONFIRM(1).png";
 
     // patty
     this.patty = new Image();
@@ -1124,18 +1124,18 @@ class BossFight extends Minigame {
       ctx.fillRect(WIDTH / 2 - 15, 5, WIDTH / 2 + 10, HEIGHT / 20 + 10);
       ctx.fillStyle = "red";
       ctx.fillRect(WIDTH / 2 - 10, 10, this.health, HEIGHT / 20); // shrink the width depending on the health: 360
-    } else {
-      // want to end this sequence and go to endings
-      if (this.health <= 0) {
-        mgr.timeout(() => {
-          this.game_state = BossFight.Game_state.win;
-        });
-      } else {
-        mgr.timeout(() => {
-          this.game_state = BossFight.Game_state.lose;
-        });
-      }
     }
+    // want to end this sequence and go to endings
+    if (this.health <= 0) {
+      mgr.timeout(() => {
+        this.game_state = BossFight.Game_state.win;
+      });
+    } else {
+      mgr.timeout(() => {
+        this.game_state = BossFight.Game_state.lose;
+      });
+    }
+
     // this.nextRound();
   }
 
@@ -1154,6 +1154,7 @@ class BossFight extends Minigame {
     ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.patty, 0, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
     ctx.drawImage(this.barista, WIDTH / 2, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+    console.log("still in the loop");
 
     switch (this.game_state) {
       case BossFight.Game_state.default:
@@ -1450,7 +1451,7 @@ class BossFight extends Minigame {
     //   default:
     //     return 1000;
     // }
-    return 30;
+    return 50;
   }
 
   win() {
@@ -1459,23 +1460,31 @@ class BossFight extends Minigame {
   }
 }
 
-class endings extends Minigame {
-  setup(ctx) {
-    // ENDS
-    this.end = new Image();
-    this.sad_end = "assets/CAFE_end_SAD.png";
-    this.good_end = "assets/CAFE_end.png";
-    this.end.src = this.sad_end;
-  }
+// class endings extends Minigame {
+//   setup(ctx) {
+//     // ENDS
+//     this.end = new Image();
+//     this.sad_end = "assets/CAFE_end_SAD.png";
+//     this.good_end = "assets/CAFE_end.png";
+//     this.end.src = this.sad_end;
+//   }
 
-  loop(ctx, i, mgr, inp) {
-    if (dimness > 90) {
-      this.end.src = this.good_end;
-    } else {
-      this.end.src = this.sad_end;
-    }
-  }
-}
+//   loop(ctx, i, mgr, inp) {
+//     if (dimness > 90) {
+//       this.end.src = this.good_end;
+//     } else {
+//       this.end.src = this.sad_end;
+//     }
+//     ctx.drawImage(this.end, 0, 0);
+//   }
+
+//   time() {
+//     return 10;
+//   }
+//   prompt() {
+//     return "";
+//   }
+// }
 
 class PhoneInBedMinigame {
   constructor() {
@@ -1640,17 +1649,9 @@ class CleanUpMinigame extends Minigame {
     ];
 
     this.bins = [
-      new GrabbableThing(100, 500, 200, 150, load("assets/dish bin.jpg"), 0, 0),
-      new GrabbableThing(
-        300,
-        500,
-        150,
-        200,
-        load("assets/trash bin.gif"),
-        1,
-        1
-      ),
-      new GrabbableThing(500, 500, 100, 250, load("assets/hamper.jpeg"), 2, 2),
+      new GrabbableThing(100, 500, 200, 150, load("assets/DISHBIN.png"), 0, 0),
+      new GrabbableThing(300, 500, 150, 200, load("assets/TRASH.png"), 1, 1),
+      new GrabbableThing(500, 500, 200, 250, load("assets/HAMPER.png"), 2, 2),
     ];
 
     /**
