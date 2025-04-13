@@ -12,7 +12,6 @@ const ARROW_RIGHT = "ArrowRight";
 const ARROW_DOWN = "ArrowDown";
 const ARROW_UP = "ArrowUp";
 
-
 document.addEventListener("DOMContentLoaded", async () => {
   /** @type HTMLCanvasElement */
   const canvas = document.getElementById("game");
@@ -21,10 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   canvas.focus();
   let dimness = 0.5;
 
-  dimness = await run(new MazeMinigame(), ctx, inp, dimness);
-  dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
-  dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
   dimness = await run(new PhoneInBedMinigame(), ctx, inp, dimness);
+  dimness = await run(new DressUpMinigame(), ctx, inp, dimness);
+  dimness = await run(new CookingMinigame(), ctx, inp, dimness);
+  dimness = await run(new CleanUpMinigame(), ctx, inp, dimness);
+  dimness = await run(new MazeMinigame(), ctx, inp, dimness);
   dimness = await run(new MeowMinigame(), ctx, inp, dimness);
 });
 
@@ -59,19 +59,19 @@ class InputManager {
     this.queue = [];
 
     canvas.addEventListener("keydown", (evt) =>
-      this.queue.push(() => this.onKeyDown(evt))
+      this.queue.push(() => this.onKeyDown(evt)),
     );
     canvas.addEventListener("keyup", (evt) =>
-      this.queue.push(() => this.onKeyUp(evt))
+      this.queue.push(() => this.onKeyUp(evt)),
     );
     canvas.addEventListener("mousedown", (evt) =>
-      this.queue.push(() => this.onMouseDown(evt))
+      this.queue.push(() => this.onMouseDown(evt)),
     );
     canvas.addEventListener("mouseup", (evt) =>
-      this.queue.push(() => this.onMouseUp(evt))
+      this.queue.push(() => this.onMouseUp(evt)),
     );
     canvas.addEventListener("mousemove", (evt) =>
-      this.queue.push(() => this.onMouseMove(evt))
+      this.queue.push(() => this.onMouseMove(evt)),
     );
   }
 
@@ -156,7 +156,7 @@ class InputManager {
 
     this.queue = [];
   }
-  
+
   frameEnd() {
     this.up.clear();
     this.down.clear();
@@ -220,7 +220,7 @@ async function run(game, ctx, inp, dimness) {
   console.log(dimness);
   const timer = document.getElementById("timer");
   const prompt = document.getElementById("prompt");
-  
+
   game.setup(ctx);
   let i = 0;
   let handler = null;
@@ -468,7 +468,7 @@ class DressUpMinigame extends Minigame {
     ctx.drawImage(
       this.confirm,
       CENTER_X - CENTER_X / 2,
-      CENTER_Y + 100 + CENTER_Y / 2
+      CENTER_Y + 100 + CENTER_Y / 2,
     ),
       WIDTH / 2,
       HEIGHT / 2;
@@ -479,14 +479,14 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - 50 - HEIGHT / 2.2,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.right_arrow_hat,
       this.right_arrow_hatx,
       this.right_arrow_haty,
       100,
-      100
+      100,
     );
 
     ctx.drawImage(
@@ -494,35 +494,35 @@ class DressUpMinigame extends Minigame {
       this.right_arrow_topx,
       this.right_arrow_topy,
       this.right_arrow_top.width,
-      this.right_arrow_top.height
+      this.right_arrow_top.height,
     );
     ctx.drawImage(
       this.right_arrow_bottom,
       this.right_arrow_bottomx,
       this.right_arrow_bottomy,
       this.right_arrow_bottom.width,
-      this.right_arrow_bottom.height
+      this.right_arrow_bottom.height,
     );
     ctx.drawImage(
       this.left_arrow_hat,
       this.left_arrow_hatx,
       this.left_arrow_haty,
       this.left_arrow_hat.width,
-      this.left_arrow_hat.height
+      this.left_arrow_hat.height,
     );
     ctx.drawImage(
       this.left_arrow_top,
       this.left_arrow_topx,
       this.left_arrow_topy,
       this.left_arrow_top.width,
-      this.left_arrow_top.height
+      this.left_arrow_top.height,
     );
     ctx.drawImage(
       this.left_arrow_bottom,
       this.left_arrow_bottomx,
       this.left_arrow_bottomy,
       this.left_arrow_bottom.width,
-      this.left_arrow_bottom.height
+      this.left_arrow_bottom.height,
     );
 
     // yipepee yipeee yipee
@@ -566,21 +566,21 @@ class DressUpMinigame extends Minigame {
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.top,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
     ctx.drawImage(
       this.bottom,
       CENTER_X - WIDTH / 2.2,
       CENTER_Y - HEIGHT / 2.2 - 50,
       WIDTH / 1.1,
-      HEIGHT / 1.1
+      HEIGHT / 1.1,
     );
 
     // CONTROL LOGIC FOR the arrow stuff
@@ -712,6 +712,15 @@ class DressUpMinigame extends Minigame {
   time() {
     // how long we want minigame to last!
     return 10;
+  }
+
+  prompt() {
+    return "Change clothing with the arrows to build Patricia's favorite outfit";
+  }
+
+  win() {
+    // TODO
+    return false;
   }
 }
 
@@ -879,6 +888,17 @@ class CookingMinigame extends Minigame {
   time() {
     return 20;
   }
+
+  /**
+   * @returns {string}
+   */
+  prompt() {
+    return "Click the tiles in order of which they light up";
+  }
+
+  win() {
+    return this.sequence.length >= 4;
+  }
 }
 
 class PhoneInBedMinigame {
@@ -887,15 +907,18 @@ class PhoneInBedMinigame {
     this.y = (HEIGHT * 3) / 4;
     this.vx = 0;
     this.vy = 0;
-    this.width = 64;
-    this.height = 96;
-    this.phone;
+    this.width = 256;
+    this.height = 256;
+    this.phone = load("assets/PHONE.png");
+    this.patty = load("assets/PATTY_BED.png");
   }
 
   /**
    * @param {CanvasRenderingContext2D} ctx
    */
-  setup(ctx) {}
+  setup(ctx) {
+    this.state = 4;
+  }
 
   /**
    * @param {LerpManager} mgr
@@ -957,7 +980,7 @@ class PhoneInBedMinigame {
           this.x - this.width / 2,
           this.y - this.height / 2,
           this.width,
-          this.height
+          this.height,
         );
         break;
     }
@@ -1300,102 +1323,6 @@ class MazeMinigame extends Minigame {
   }
 }
 
-class PhoneInBedMinigame {
-  constructor() {
-    this.x = WIDTH / 2;
-    this.y = (HEIGHT * 3) / 4;
-    this.vx = 0;
-    this.vy = 0;
-    this.width = 256;
-    this.height = 256;
-    this.phone = new Image();
-    this.phone.src = "assets/PHONE.png";
-    this.patty = new Image();
-    this.patty.src = "assets/PATTY_BED.png";
-    this.state = 4;
-  }
-
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   */
-  setup(ctx) {}
-
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {Number} i
-   * @param {LerpManager} mgr
-   * @param {InputManager} inp
-   */
-  loop(ctx, i, mgr, inp) {
-    console.dir(this.state);
-    switch (this.state) {
-      case 4:
-        mgr.timeout(() => {
-          this.state--;
-          mgr.timeout(() => {
-            this.state--;
-            mgr.timeout(() => {
-              this.state--;
-            }, FPS);
-          }, FPS);
-        }, FPS);
-        this.state--;
-      case 3:
-      case 2:
-      case 1:
-        const l = this.state.toString();
-        ctx.font = "40px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "black";
-        ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
-        break;
-      case 0:
-        ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
-
-        const C = 1;
-
-        const left = inp.isKeyDown(ARROW_LEFT);
-        const right = inp.isKeyDown(ARROW_RIGHT);
-
-        this.vy -= C;
-
-        const D = 5;
-
-        if (left && !right) {
-          // this.vx -= D;
-          this.vy += D;
-        }
-
-        if (right && !left) {
-          // this.vx += D;
-          this.vy += D;
-        }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        this.x = Math.min(WIDTH, Math.max(0, this.x));
-        this.y = Math.min(HEIGHT, Math.max(0, this.y));
-
-        ctx.drawImage(
-          this.patty,
-          this.x - this.width / 2,
-          this.y - this.height / 2,
-          this.width,
-          this.height,
-        );
-        break;
-    }
-  }
-
-  /**
-   * @returns {Number}
-   */
-  time() {
-    return 10;
-  }
-}
-
 /**
  *
  * @param {string} src
@@ -1406,151 +1333,3 @@ function load(src) {
   image.src = src;
   return image;
 }
-
-class GrabbableThing {
-  constructor(x, y, w, h, img, bin, z) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.img = img;
-    this.bin = bin;
-    this.z = z;
-  }
-
-  /**
-   *
-   * @param {CanvasRenderingContext2D} ctx
-   */
-  draw(ctx) {
-    ctx.drawImage(
-      this.img,
-      this.x - this.w / 2,
-      this.y - this.h / 2,
-      this.w,
-      this.h,
-    );
-  }
-
-  contains(x, y) {
-    return (
-      this.x - this.w / 2 <= x &&
-      x <= this.x + this.w / 2 &&
-      this.y - this.h / 2 <= y &&
-      y <= this.y + this.h / 2
-    );
-  }
-}
-
-class CleanUpMinigame extends Minigame {
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   */
-  setup(ctx) {
-    const thingTypes = [
-      { img: load("assets/mug.jpg"), w: 64, h: 64, bin: 0 },
-      { img: load("assets/bag.jpg"), w: 32, h: 32, bin: 1 },
-      { img: load("assets/costco cup.jpg"), w: 32, h: 64, bin: 1 },
-      { img: load("assets/hoodie.jpg"), w: 96, h: 96, bin: 2 },
-    ];
-
-    this.bins = [
-      new GrabbableThing(100, 100, 200, 150, load("assets/dish bin.jpg"), 0, 0),
-      new GrabbableThing(
-        300,
-        400,
-        150,
-        200,
-        load("assets/trash bin.gif"),
-        1,
-        1,
-      ),
-      new GrabbableThing(500, 600, 100, 250, load("assets/hamper.jpeg"), 2, 2),
-    ];
-
-    /**
-     * @type {GrabbableThing[]}
-     */
-    this.things = [];
-
-    for (let z = 0; z < 50; z++) {
-      const type = thingTypes[Math.floor(Math.random() * thingTypes.length)];
-      const thing = new GrabbableThing(
-        Math.random() * WIDTH,
-        Math.random() * HEIGHT,
-        type.w,
-        type.h,
-        type.img,
-        type.bin,
-        z,
-      );
-
-      this.things.push(thing);
-    }
-
-    /**
-     * @type {number | null}
-     */
-    this.grabbed = null;
-  }
-
-  /**
-   * @param {CanvasRenderingContext2D} ctx
-   * @param {Number} i
-   * @param {LerpManager} mgr
-   * @param {InputManager} inp
-   */
-  loop(ctx, i, mgr, inp) {
-    if (inp.isMouseDown(MOUSE_LEFT)) {
-      this.grabbed = null;
-      for (const i in this.things) {
-        if (this.things[i].contains(inp.mouseX, inp.mouseY)) {
-          this.grabbed = i;
-        }
-      }
-    }
-
-    if (inp.isMousePressed(MOUSE_LEFT)) {
-      if (this.grabbed != null) {
-        this.things[this.grabbed].x = inp.mouseX;
-        this.things[this.grabbed].y = inp.mouseY;
-      }
-    }
-
-    if (inp.isMouseUp(MOUSE_LEFT)) {
-      if (this.grabbed) {
-        const thing = this.things[this.grabbed];
-        let yay = false;
-        for (const x of [thing.x - thing.w / 2, thing.x + thing.w / 2]) {
-          for (const y of [thing.y - thing.h / 2, thing.y + thing.h / 2]) {
-            if (this.bins[this.things[this.grabbed].bin].contains(x, y)) {
-              yay = true;
-            }
-          }
-        }
-
-        if (yay) {
-          // i hate java sript
-          this.things.splice(this.grabbed, 1);
-        }
-        this.grabbed = null;
-      }
-    }
-
-    for (const bin of this.bins) {
-      bin.draw(ctx);
-    }
-
-    for (const thing of this.things) {
-      thing.draw(ctx);
-    }
-  }
-
-  /**
-   * @returns {Number}
-   */
-  time() {
-    return 10;
-  }
-}
-
