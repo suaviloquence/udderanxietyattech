@@ -4,13 +4,21 @@ const CENTER_X = WIDTH / 2;
 const CENTER_Y = WIDTH / 2;
 const FPS = 60;
 
-document.addEventListener("DOMContentLoaded", () => {
+const MOUSE_LEFT = 0;
+const MOUSE_RIGHT = 2;
+
+const ARROW_LEFT = "ArrowLeft";
+const ARROW_RIGHT = "ArrowRight";
+
+document.addEventListener("DOMContentLoaded", async () => {
   /** @type HTMLCanvasElement */
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
   const inp = new InputManager(canvas);
+  canvas.focus();
 
-  run(new MeowMinigame(), ctx, inp);
+  await run(new PhoneInBedMinigame(), ctx, inp);
+  await run(new MeowMinigame(), ctx, inp);
 });
 
 class InputManager {
@@ -35,72 +43,92 @@ class InputManager {
     this.up = new Set();
     this.mouseX = 0;
     this.mouseY = 0;
+    /**
+     * @type {(() => ())[]}
+     */
+    this.queue = [];
 
-    canvas.addEventListener("keydown", (evt) => this.onKeyDown(evt));
-    canvas.addEventListener("keyup", (evt) => this.onKeyUp(evt));
-    canvas.addEventListener("mousedown", (evt) => this.onMouseDown(evt));
-    canvas.addEventListener("mouseup", (evt) => this.onMouseUp(evt));
-    canvas.addEventListener("mousemove", (evt) => this.onMouseMove(evt));
+    canvas.addEventListener("keydown", (evt) =>
+      this.queue.push(() => this.onKeyDown(evt)),
+    );
+    canvas.addEventListener("keyup", (evt) =>
+      this.queue.push(() => this.onKeyUp(evt)),
+    );
+    canvas.addEventListener("mousedown", (evt) =>
+      this.queue.push(() => this.onMouseDown(evt)),
+    );
+    canvas.addEventListener("mouseup", (evt) =>
+      this.queue.push(() => this.onMouseUp(evt)),
+    );
+    canvas.addEventListener("mousemove", (evt) =>
+      this.queue.push(() => this.onMouseMove(evt)),
+    );
   }
 
   isKeyDown(code) {
-    return this.down.has({ key: code });
+    return this.down.has(`k${code}`);
   }
 
   isKeyUp(code) {
-    return this.up.has({ key: code });
+    return this.up.has(`k${code}`);
   }
 
   isKeyPressed(code) {
-    return this.pressed.has({ key: code });
+    return this.pressed.has(`k${code}`);
   }
 
   isMouseDown(button) {
-    return this.down.has({ mouse: button });
+    return this.down.has(`m${button}`);
   }
 
   isMouseUp(button) {
-    return this.up.has({ mouse: button });
+    return this.up.has(`m${button}`);
   }
 
   isMousePressed(button) {
-    return this.pressed.has({ mouse: button });
+    return this.pressed.has(`m${button}`);
   }
 
   /**
    * @param {KeyboardEvent} evt
    */
   onKeyDown(evt) {
-    this.up.remove({ key: evt.key });
-    this.down.add({ key: evt.key });
-    this.pressed.add({ key: evt.key });
+    if (!evt.repeat) {
+      const key = `k${evt.key}`;
+      this.up.delete(key);
+      this.down.add(key);
+      this.pressed.add(key);
+    }
   }
 
   /**
    * @param {KeyboardEvent} evt
    */
   onKeyUp(evt) {
-    this.down.remove({ key: evt.key });
-    this.pressed.remove({ key: evt.key });
-    this.up.add({ key: evt.key });
+    const key = `k${evt.key}`;
+    this.down.delete(key);
+    this.pressed.delete(key);
+    this.up.add(key);
   }
 
   /**
    * @param {MouseEvent} evt
    */
   onMouseDown(evt) {
-    this.down.add({ mouse: evt.button });
-    this.pressed.add({ mouse: evt.button });
-    this.up.remove({ mouse: evt.button });
+    const key = `m${evt.button}`;
+    this.down.add(key);
+    this.pressed.add(key);
+    this.up.delete(key);
   }
 
   /**
    * @param {MouseEvent} evt
    */
   onMouseUp(evt) {
-    this.down.remove({ mouse: evt.button });
-    this.pressed.remove({ mouse: evt.button });
-    this.up.add({ mouse: evt.button });
+    const key = `m${evt.button}`;
+    this.down.delete(key);
+    this.pressed.delete(key);
+    this.up.add(key);
   }
 
   /**
@@ -111,7 +139,15 @@ class InputManager {
     this.mouseY = evt.clientY;
   }
 
-  nextFrame() {
+  frameStart() {
+    for (const f of this.queue) {
+      f();
+    }
+
+    this.queue = [];
+  }
+
+  frameEnd() {
     this.up.clear();
     this.down.clear();
   }
@@ -160,6 +196,8 @@ class LerpManager {
       },
       left: time,
     });
+
+    console.dir(this.lerps);
   }
 }
 
@@ -168,25 +206,30 @@ class LerpManager {
  * @param {CanvasRenderingContext2D} ctx
  * @param {InputManager} inp
  */
-function run(game, ctx, inp) {
+async function run(game, ctx, inp) {
   game.setup(ctx);
   let i = 0;
   let handler = null;
 
   let mgr = new LerpManager();
 
-  handler = setInterval(() => {
-    i += 1;
-    if (i > FPS * game.time()) {
-      clearInterval(handler);
-    }
+  return new Promise((resolve, reject) => {
+    handler = setInterval(() => {
+      i += 1;
+      if (i > FPS * game.time()) {
+        clearInterval(handler);
+        resolve(null);
+      }
 
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+      inp.frameStart();
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    game.loop(ctx, i, mgr, inp);
-    mgr.loop();
-  }, 1000.0 / FPS);
+      game.loop(ctx, i, mgr, inp);
+      mgr.loop();
+      inp.frameEnd();
+    }, 1000.0 / FPS);
+  });
 }
 
 class Minigame {
@@ -256,5 +299,101 @@ class MeowMinigame extends Minigame {
         }, 20);
       }
     }
+  }
+}
+
+class PhoneInBedMinigame {
+  constructor() {
+    this.x = WIDTH / 2;
+    this.y = (HEIGHT * 3) / 4;
+    this.vx = 0;
+    this.vy = 0;
+    this.width = 256;
+    this.height = 256;
+    this.phone = new Image();
+    this.phone.src = "assets/PHONE.png";
+    this.patty = new Image();
+    this.patty.src = "assets/PATTY_BED.png";
+    this.state = 4;
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  setup(ctx) {}
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   * @param {LerpManager} mgr
+   * @param {InputManager} inp
+   */
+  loop(ctx, i, mgr, inp) {
+    console.dir(this.state);
+    switch (this.state) {
+      case 4:
+        mgr.timeout(() => {
+          this.state--;
+          mgr.timeout(() => {
+            this.state--;
+            mgr.timeout(() => {
+              this.state--;
+            }, FPS);
+          }, FPS);
+        }, FPS);
+        this.state--;
+      case 3:
+      case 2:
+      case 1:
+        const l = this.state.toString();
+        ctx.font = "40px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.fillText(l, WIDTH / 2, HEIGHT / 2);
+        break;
+      case 0:
+        ctx.drawImage(this.phone, 0, 0, WIDTH, HEIGHT);
+
+        const C = 1;
+
+        const left = inp.isKeyDown(ARROW_LEFT);
+        const right = inp.isKeyDown(ARROW_RIGHT);
+
+        this.vy -= C;
+
+        const D = 5;
+
+        if (left && !right) {
+          // this.vx -= D;
+          this.vy += D;
+        }
+
+        if (right && !left) {
+          // this.vx += D;
+          this.vy += D;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.x = Math.min(WIDTH, Math.max(0, this.x));
+        this.y = Math.min(HEIGHT, Math.max(0, this.y));
+
+        ctx.drawImage(
+          this.patty,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height,
+        );
+        break;
+    }
+  }
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    return 10;
   }
 }
