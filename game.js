@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const inp = new InputManager(canvas);
   canvas.focus();
 
+  await run(new CleanUpMinigame(), ctx, inp);
   await run(new PhoneInBedMinigame(), ctx, inp);
   await run(new MeowMinigame(), ctx, inp);
 });
@@ -43,6 +44,10 @@ class InputManager {
     this.up = new Set();
     this.mouseX = 0;
     this.mouseY = 0;
+    this.offsetX = canvas.offsetLeft;
+    this.offsetY = canvas.offsetTop;
+
+
     /**
      * @type {(() => ())[]}
      */
@@ -135,8 +140,8 @@ class InputManager {
    * @param {MouseEvent} evt
    */
   onMouseMove(evt) {
-    this.mouseX = evt.clientX;
-    this.mouseY = evt.clientY;
+    this.mouseX = evt.clientX - this.offsetX;
+    this.mouseY = evt.clientY - this.offsetY;
   }
 
   frameStart() {
@@ -397,3 +402,162 @@ class PhoneInBedMinigame {
     return 10;
   }
 }
+
+/**
+ *
+ * @param {string} src
+ * @returns {HTMLImageElement}
+ */
+function load(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
+class GrabbableThing {
+  constructor(x, y, w, h, img, bin, z) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.img = img;
+    this.bin = bin;
+    this.z = z;
+  }
+
+  /**
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  draw(ctx) {
+    ctx.drawImage(
+      this.img,
+      this.x - this.w / 2,
+      this.y - this.h / 2,
+      this.w,
+      this.h,
+    );
+  }
+
+  contains(x, y) {
+    return (
+      this.x - this.w / 2 <= x &&
+      x <= this.x + this.w / 2 &&
+      this.y - this.h / 2 <= y &&
+      y <= this.y + this.h / 2
+    );
+  }
+}
+
+class CleanUpMinigame extends Minigame {
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   */
+  setup(ctx) {
+    const thingTypes = [
+      { img: load("assets/mug.jpg"), w: 64, h: 64, bin: 0 },
+      { img: load("assets/bag.jpg"), w: 32, h: 32, bin: 1 },
+      { img: load("assets/costco cup.jpg"), w: 32, h: 64, bin: 1 },
+      { img: load("assets/hoodie.jpg"), w: 96, h: 96, bin: 2 },
+    ];
+
+    this.bins = [
+      new GrabbableThing(100, 100, 200, 150, load("assets/dish bin.jpg"), 0, 0),
+      new GrabbableThing(
+        300,
+        400,
+        150,
+        200,
+        load("assets/trash bin.gif"),
+        1,
+        1,
+      ),
+      new GrabbableThing(500, 600, 100, 250, load("assets/hamper.jpeg"), 2, 2),
+    ];
+
+    /**
+     * @type {GrabbableThing[]}
+     */
+    this.things = [];
+
+    for (let z = 0; z < 50; z++) {
+      const type = thingTypes[Math.floor(Math.random() * thingTypes.length)];
+      const thing = new GrabbableThing(
+        Math.random() * WIDTH,
+        Math.random() * HEIGHT,
+        type.w,
+        type.h,
+        type.img,
+        type.bin,
+        z,
+      );
+
+      this.things.push(thing);
+    }
+
+    /**
+     * @type {number | null}
+     */
+    this.grabbed = null;
+  }
+
+  /**
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} i
+   * @param {LerpManager} mgr
+   * @param {InputManager} inp
+   */
+  loop(ctx, i, mgr, inp) {
+    if (inp.isMouseDown(MOUSE_LEFT)) {
+      this.grabbed = null;
+      for (const i in this.things) {
+        if (this.things[i].contains(inp.mouseX, inp.mouseY)) {
+          this.grabbed = i;
+        }
+      }
+    }
+
+    if (inp.isMousePressed(MOUSE_LEFT)) {
+      if (this.grabbed != null) {
+        this.things[this.grabbed].x = inp.mouseX;
+        this.things[this.grabbed].y = inp.mouseY;
+      }
+    }
+
+    if (inp.isMouseUp(MOUSE_LEFT)) {
+      if (this.grabbed) {
+        const thing = this.things[this.grabbed];
+        let yay = false;
+        for (const x of [thing.x - thing.w / 2, thing.x + thing.w / 2]) {
+          for (const y of [thing.y - thing.h / 2, thing.y + thing.h / 2]) {
+            if (this.bins[this.things[this.grabbed].bin].contains(x, y)) {
+              yay = true;
+            }
+          }
+        }
+
+        if (yay) {
+          // i hate java sript
+          this.things.splice(this.grabbed, 1);
+        }
+        this.grabbed = null;
+      }
+    }
+
+    for (const bin of this.bins) {
+      bin.draw(ctx);
+    }
+
+    for (const thing of this.things) {
+      thing.draw(ctx);
+    }
+  }
+
+  /**
+   * @returns {Number}
+   */
+  time() {
+    return 10;
+  }
+}
+
